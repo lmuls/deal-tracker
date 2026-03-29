@@ -40,6 +40,9 @@ public class TrackedSite {
     @Column(name = "last_content_hash")
     private String lastContentHash;
 
+    @Column(name = "last_checked_at")
+    private Instant lastCheckedAt;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 

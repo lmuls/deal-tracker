@@ -1,0 +1,17 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    open-in-view: false
+  flyway:
+    enabled: true
+
+harvester:
+  snapshot-dir: ${java.io.tmpdir}/dealtracker-test-snapshots
+  max-retries: 2
+  initial-backoff: PT0.1S
+  backoff-multiplier: 1.0
+  robots-cache-ttl: PT1M
+  http-timeout: PT5S
+  user-agent: "DealTrackerBot-Test/1.0"
