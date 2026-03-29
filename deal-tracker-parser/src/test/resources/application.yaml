@@ -1,0 +1,13 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    open-in-view: false
+  flyway:
+    enabled: true
+
+parser:
+  snapshot-dir: ${java.io.tmpdir}/dealtracker-parser-test-snapshots
+  default-locale: en
+  poll-interval-ms: 999999999
