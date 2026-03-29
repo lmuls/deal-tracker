@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: dealtracker
+  datasource:
+    url: jdbc:postgresql://localhost:5432/dealtracker
+    username: dealtracker
+    password: dealtracker
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    open-in-view: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
