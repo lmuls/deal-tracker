@@ -1,0 +1,135 @@
+locales:
+  en:
+    percentage_discount:
+      patterns:
+        - '\d{1,2}%\s*(off|discount|savings)'
+        - 'save\s+\d{1,2}%'
+        - 'up\s+to\s+\d{1,2}%\s+off'
+      keywords:
+        - "percent off"
+        - "half price"
+        - "half off"
+    fixed_amount_discount:
+      patterns:
+        - '(save|get)\s+[\$£€]\s*\d+'
+        - '[\$£€]\s*\d+\s+off'
+      keywords:
+        - "dollars off"
+        - "money off"
+    sale_event:
+      keywords:
+        - "spring sale"
+        - "summer sale"
+        - "winter sale"
+        - "autumn sale"
+        - "flash sale"
+        - "clearance sale"
+        - "black friday"
+        - "cyber monday"
+        - "end of season"
+        - "site-wide sale"
+        - "sitewide sale"
+        - "store-wide sale"
+        - "grand opening sale"
+        - "anniversary sale"
+        - "holiday sale"
+        - "warehouse sale"
+        - "everything must go"
+    promotional:
+      keywords:
+        - "free shipping"
+        - "free delivery"
+        - "buy one get one"
+        - "BOGO"
+        - "gift with purchase"
+        - "limited time offer"
+        - "special offer"
+        - "exclusive offer"
+        - "members only"
+        - "today only"
+        - "this weekend only"
+    coupon:
+      patterns:
+        - '(use|enter|apply|code|coupon|promo)\s*:?\s*[A-Z0-9]{3,}'
+      keywords:
+        - "promo code"
+        - "coupon code"
+        - "discount code"
+        - "voucher code"
+        - "use code"
+    urgency:
+      keywords:
+        - "ends today"
+        - "ends tonight"
+        - "ends soon"
+        - "last chance"
+        - "while supplies last"
+        - "limited stock"
+        - "don't miss out"
+        - "hurry"
+        - "final hours"
+        - "selling fast"
+
+  no:
+    percentage_discount:
+      patterns:
+        - '\d{1,2}%\s*(rabatt|avslag)'
+        - 'spar\s+\d{1,2}%'
+        - 'opptil\s+\d{1,2}%'
+      keywords:
+        - "prosent rabatt"
+        - "halv pris"
+    fixed_amount_discount:
+      patterns:
+        - 'spar\s+\d+\s*(kr|NOK)'
+        - '\d+\s*(kr|NOK)\s+(rabatt|avslag)'
+      keywords:
+        - "kroner rabatt"
+        - "kroner avslag"
+    sale_event:
+      keywords:
+        - "vårsalg"
+        - "sommersalg"
+        - "vintersalg"
+        - "høstsalg"
+        - "black friday"
+        - "cyber monday"
+        - "sesongslutt"
+        - "lageruttømming"
+        - "lagersalg"
+        - "alt må ut"
+        - "storsalg"
+        - "supersalg"
+        - "kampanje"
+        - "vårslipp"
+        - "romjulssalg"
+    promotional:
+      keywords:
+        - "gratis frakt"
+        - "gratis levering"
+        - "fri frakt"
+        - "kjøp 2 betal for 1"
+        - "gavekort inkludert"
+        - "begrenset tilbud"
+        - "spesialtilbud"
+        - "eksklusivt tilbud"
+        - "kun i dag"
+        - "kun denne helgen"
+        - "medlemstilbud"
+    coupon:
+      patterns:
+        - '(bruk|skriv|kode|kupong|rabattkode)\s*:?\s*[A-Z0-9]{3,}'
+      keywords:
+        - "rabattkode"
+        - "kupongkode"
+        - "kampanjekode"
+        - "bruk kode"
+    urgency:
+      keywords:
+        - "slutter i dag"
+        - "siste sjanse"
+        - "begrenset antall"
+        - "snart slutt"
+        - "går fort"
+        - "skynd deg"
+        - "siste dag"

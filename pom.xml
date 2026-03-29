@@ -17,6 +17,7 @@
     <modules>
         <module>deal-tracker-common</module>
         <module>deal-tracker-harvester</module>
+        <module>deal-tracker-parser</module>
         <module>deal-tracker-webapp</module>
     </modules>
 
