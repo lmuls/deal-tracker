@@ -2,6 +2,12 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+    show-sql: false
     open-in-view: false
   flyway:
     enabled: true
+
+webapp:
+  dispatch-interval-ms: 999999999
+  default-user-email: test@dealtracker.local
+  daily-digest-cron: "0 0 8 31 2 *"

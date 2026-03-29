@@ -1,0 +1,482 @@
+openapi: 3.0.3
+info:
+  title: Deal Tracker API
+  description: REST API for managing tracked sites, deals, and notifications.
+  version: 1.0.0
+
+servers:
+  - url: /api/v1
+
+tags:
+  - name: Sites
+    description: Tracked site management
+  - name: Deals
+    description: Detected deals
+  - name: Notifications
+    description: User notifications
+  - name: Preferences
+    description: User notification preferences
+
+paths:
+  # ── Sites ──────────────────────────────────────────────────────────────────
+  /sites:
+    get:
+      tags: [Sites]
+      summary: List all tracked sites
+      operationId: listSites
+      responses:
+        '200':
+          description: List of tracked sites with current deal status
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SiteResponse'
+    post:
+      tags: [Sites]
+      summary: Add a new site to track
+      operationId: createSite
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSiteRequest'
+      responses:
+        '201':
+          description: Site created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteResponse'
+        '400':
+          description: Invalid request
+
+  /sites/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      tags: [Sites]
+      summary: Get site detail including active deals
+      operationId: getSite
+      responses:
+        '200':
+          description: Site detail with active deals
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteDetailResponse'
+        '404':
+          description: Site not found
+    put:
+      tags: [Sites]
+      summary: Update site settings
+      operationId: updateSite
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSiteRequest'
+      responses:
+        '200':
+          description: Updated site
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteResponse'
+        '404':
+          description: Site not found
+    delete:
+      tags: [Sites]
+      summary: Remove a tracked site
+      operationId: deleteSite
+      responses:
+        '204':
+          description: Deleted
+        '404':
+          description: Site not found
+
+  # ── Deals ──────────────────────────────────────────────────────────────────
+  /sites/{id}/deals:
+    get:
+      tags: [Deals]
+      summary: Deal history for a specific site
+      operationId: listSiteDeals
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Paginated deal history
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DealPageResponse'
+        '404':
+          description: Site not found
+
+  /deals:
+    get:
+      tags: [Deals]
+      summary: All deals across all sites with optional filters
+      operationId: listDeals
+      parameters:
+        - name: active
+          in: query
+          schema:
+            type: boolean
+        - name: confidence
+          in: query
+          schema:
+            type: string
+            enum: [HIGH, MEDIUM, LOW]
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [PERCENTAGE_OFF, COUPON, SALE_EVENT, FREE_SHIPPING, BOGO, OTHER]
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Paginated deals
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DealPageResponse'
+
+  /deals/active:
+    get:
+      tags: [Deals]
+      summary: All currently active deals (dashboard feed)
+      operationId: listActiveDeals
+      responses:
+        '200':
+          description: Active deals ordered by detection time desc
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DealResponse'
+
+  # ── Notifications ───────────────────────────────────────────────────────────
+  /notifications:
+    get:
+      tags: [Notifications]
+      summary: List notifications for the current user
+      operationId: listNotifications
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Paginated notifications
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationPageResponse'
+
+  /notifications/unread-count:
+    get:
+      tags: [Notifications]
+      summary: Unread notification count
+      operationId: getUnreadCount
+      responses:
+        '200':
+          description: Unread count
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnreadCountResponse'
+
+  /notifications/read-all:
+    put:
+      tags: [Notifications]
+      summary: Mark all notifications as read
+      operationId: markAllNotificationsRead
+      responses:
+        '204':
+          description: All marked read
+
+  /notifications/{id}/read:
+    put:
+      tags: [Notifications]
+      summary: Mark a single notification as read
+      operationId: markNotificationRead
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Marked read
+        '404':
+          description: Notification not found
+
+  # ── Preferences ─────────────────────────────────────────────────────────────
+  /preferences:
+    get:
+      tags: [Preferences]
+      summary: Get notification preferences
+      operationId: getPreferences
+      responses:
+        '200':
+          description: Current preferences
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PreferencesResponse'
+    put:
+      tags: [Preferences]
+      summary: Update notification preferences
+      operationId: updatePreferences
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePreferencesRequest'
+      responses:
+        '200':
+          description: Updated preferences
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PreferencesResponse'
+
+components:
+  schemas:
+    # ── Site DTOs ──────────────────────────────────────────────────────────────
+    SiteResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        url:
+          type: string
+        name:
+          type: string
+        checkInterval:
+          type: string
+        active:
+          type: boolean
+        lastCheckedAt:
+          type: string
+          format: date-time
+        activeDealsCount:
+          type: integer
+        hasActiveDeal:
+          type: boolean
+
+    SiteDetailResponse:
+      allOf:
+        - $ref: '#/components/schemas/SiteResponse'
+        - type: object
+          properties:
+            activeDeals:
+              type: array
+              items:
+                $ref: '#/components/schemas/DealResponse'
+
+    CreateSiteRequest:
+      type: object
+      required: [url, name, checkInterval]
+      properties:
+        url:
+          type: string
+          format: uri
+        name:
+          type: string
+        checkInterval:
+          type: string
+          description: "e.g. '1 hour', '30 minutes', 'PT6H'"
+
+    UpdateSiteRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        checkInterval:
+          type: string
+        active:
+          type: boolean
+
+    # ── Deal DTOs ──────────────────────────────────────────────────────────────
+    DealResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        siteId:
+          type: string
+          format: uuid
+        siteName:
+          type: string
+        type:
+          $ref: '#/components/schemas/DealType'
+        title:
+          type: string
+        description:
+          type: string
+        discountValue:
+          type: string
+        confidence:
+          $ref: '#/components/schemas/Confidence'
+        detectionLayer:
+          $ref: '#/components/schemas/DetectionLayer'
+        detectedAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+        active:
+          type: boolean
+
+    DealPageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/DealResponse'
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+        page:
+          type: integer
+        size:
+          type: integer
+
+    # ── Notification DTOs ──────────────────────────────────────────────────────
+    NotificationResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        deal:
+          $ref: '#/components/schemas/DealResponse'
+        channel:
+          $ref: '#/components/schemas/NotificationChannel'
+        status:
+          $ref: '#/components/schemas/NotificationStatus'
+        createdAt:
+          type: string
+          format: date-time
+
+    NotificationPageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationResponse'
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+        page:
+          type: integer
+        size:
+          type: integer
+
+    UnreadCountResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int64
+
+    # ── Preference DTOs ────────────────────────────────────────────────────────
+    PreferencesResponse:
+      type: object
+      properties:
+        notifyEmail:
+          type: boolean
+        notifyInApp:
+          type: boolean
+        emailFrequency:
+          $ref: '#/components/schemas/EmailFrequency'
+
+    UpdatePreferencesRequest:
+      type: object
+      required: [notifyEmail, notifyInApp, emailFrequency]
+      properties:
+        notifyEmail:
+          type: boolean
+        notifyInApp:
+          type: boolean
+        emailFrequency:
+          $ref: '#/components/schemas/EmailFrequency'
+
+    # ── Enums ──────────────────────────────────────────────────────────────────
+    DealType:
+      type: string
+      enum: [PERCENTAGE_OFF, COUPON, SALE_EVENT, FREE_SHIPPING, BOGO, OTHER]
+
+    Confidence:
+      type: string
+      enum: [HIGH, MEDIUM, LOW]
+
+    DetectionLayer:
+      type: string
+      enum: [STRUCTURED_DATA, DOM_PATTERN, TEXT_PATTERN]
+
+    NotificationChannel:
+      type: string
+      enum: [IN_APP, EMAIL]
+
+    NotificationStatus:
+      type: string
+      enum: [PENDING, SENT, READ]
+
+    EmailFrequency:
+      type: string
+      enum: [INSTANT, DAILY_DIGEST]

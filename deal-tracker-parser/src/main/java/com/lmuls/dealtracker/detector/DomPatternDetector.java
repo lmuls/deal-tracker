@@ -1,17 +1,18 @@
 package com.lmuls.dealtracker.detector;
 
-import com.lmuls.dealtracker.enums.Confidence;
-import com.lmuls.dealtracker.enums.DealType;
-import com.lmuls.dealtracker.enums.DetectionLayer;
-import com.lmuls.dealtracker.model.DealDetection;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.springframework.stereotype.Component;
+
+import com.lmuls.dealtracker.enums.Confidence;
+import com.lmuls.dealtracker.enums.DealType;
+import com.lmuls.dealtracker.enums.DetectionLayer;
+import com.lmuls.dealtracker.model.DealDetection;
 
 /**
  * Layer 2 — scans the DOM for elements whose CSS class, ID, or data-*
