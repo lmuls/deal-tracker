@@ -1,0 +1,70 @@
+services:
+
+  # ── Database ────────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: dealtracker
+      POSTGRES_USER: dealtracker
+      POSTGRES_PASSWORD: dealtracker
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dealtracker -d dealtracker"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  # ── Harvester ───────────────────────────────────────────────────────────────
+  harvester:
+    build:
+      context: deal-tracker-harvester
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/dealtracker
+      SPRING_DATASOURCE_USERNAME: dealtracker
+      SPRING_DATASOURCE_PASSWORD: dealtracker
+      HARVESTER_SNAPSHOT_DIR: /data/snapshots
+    volumes:
+      - snapshots:/data/snapshots
+
+  # ── Parser ──────────────────────────────────────────────────────────────────
+  parser:
+    build:
+      context: deal-tracker-parser
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/dealtracker
+      SPRING_DATASOURCE_USERNAME: dealtracker
+      SPRING_DATASOURCE_PASSWORD: dealtracker
+      PARSER_SNAPSHOT_DIR: /data/snapshots
+    volumes:
+      - snapshots:/data/snapshots
+
+  # ── WebApp ──────────────────────────────────────────────────────────────────
+  webapp:
+    build:
+      context: deal-tracker-webapp
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/dealtracker
+      SPRING_DATASOURCE_USERNAME: dealtracker
+      SPRING_DATASOURCE_PASSWORD: dealtracker
+      # Optional: set MAIL_HOST to a real SMTP server or a local MailHog instance
+      MAIL_HOST: ${MAIL_HOST:-}
+      MAIL_PORT: ${MAIL_PORT:-1025}
+
+volumes:
+  pg-data:
+  snapshots:
