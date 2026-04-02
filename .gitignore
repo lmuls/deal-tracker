@@ -31,3 +31,11 @@ build/
 
 ### VS Code ###
 .vscode/
+
+
+**/node_modules/
+
+### Frontend generated / build output ###
+deal-tracker-webapp/frontend/node/
+deal-tracker-webapp/frontend/src/api/generated/
+deal-tracker-webapp/src/main/resources/static/

@@ -1,0 +1,37 @@
+@use 'variables' as *;
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin card-hover {
+  transition: box-shadow 0.2s ease, transform 0.1s ease;
+  &:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+    transform: translateY(-1px);
+  }
+}
+
+@mixin truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin respond-to($bp) {
+  @if $bp == sm {
+    @media (max-width: #{$bp-sm}) { @content; }
+  } @else if $bp == md {
+    @media (max-width: #{$bp-md}) { @content; }
+  } @else if $bp == lg {
+    @media (max-width: #{$bp-lg}) { @content; }
+  }
+}

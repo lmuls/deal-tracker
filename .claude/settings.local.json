@@ -3,7 +3,10 @@
     "allow": [
       "Bash(docker compose:*)",
       "Bash(./mvnw clean:*)",
-      "Bash(./mvnw test:*)"
+      "Bash(./mvnw test:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(node_modules/.bin/openapi-ts)"
     ]
   }
 }
