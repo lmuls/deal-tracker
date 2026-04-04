@@ -7,6 +7,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
 import { createSite } from '../../api/generated';
 
 interface Props {
@@ -49,23 +50,50 @@ export default function AddSiteDialog({ open, onClose, onCreated }: Props) {
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Add New Site</DialogTitle>
-      <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 2 }}>
-        {error && <Alert severity="error">{error}</Alert>}
-        <TextField label="URL" placeholder="https://example.com" value={url}
-          onChange={(e) => setUrl(e.target.value)} fullWidth required type="url" />
-        <TextField label="Display Name" placeholder="My Favourite Store" value={name}
-          onChange={(e) => setName(e.target.value)} fullWidth required />
-        <TextField select label="Check Interval" value={checkInterval}
-          onChange={(e) => setCheckInterval(e.target.value)} fullWidth>
-          {INTERVALS.map((opt) => (
-            <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>
-          ))}
-        </TextField>
+      <DialogTitle>Track a new site</DialogTitle>
+      <DialogContent sx={{ pt: '20px !important', pb: 1 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+          {error && <Alert severity="error" sx={{ borderRadius: 2 }}>{error}</Alert>}
+          <TextField
+            label="URL"
+            placeholder="https://example.com"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            fullWidth
+            required
+            type="url"
+          />
+          <TextField
+            label="Display Name"
+            placeholder="My Favourite Store"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            fullWidth
+            required
+          />
+          <TextField
+            select
+            label="Check Interval"
+            value={checkInterval}
+            onChange={(e) => setCheckInterval(e.target.value)}
+            fullWidth
+          >
+            {INTERVALS.map((opt) => (
+              <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>
+            ))}
+          </TextField>
+        </Box>
       </DialogContent>
-      <DialogActions sx={{ px: 3, pb: 2 }}>
-        <Button onClick={handleClose} disabled={submitting}>Cancel</Button>
-        <Button variant="contained" onClick={handleSubmit} disabled={submitting}>
+      <DialogActions sx={{ px: 3, pb: 2.5, pt: 1.5, gap: 1 }}>
+        <Button onClick={handleClose} disabled={submitting} sx={{ color: '#8890A8' }}>
+          Cancel
+        </Button>
+        <Button
+          variant="contained"
+          onClick={handleSubmit}
+          disabled={submitting}
+          sx={{ px: 2.5, boxShadow: '0 0 16px rgba(245,166,35,0.18)' }}
+        >
           {submitting ? 'Adding…' : 'Add Site'}
         </Button>
       </DialogActions>

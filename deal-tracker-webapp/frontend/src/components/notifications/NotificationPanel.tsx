@@ -2,9 +2,6 @@ import { useState, useEffect } from 'react';
 import Popover from '@mui/material/Popover';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -52,59 +49,71 @@ export default function NotificationPanel({ open, anchorEl, onClose, onAllRead }
       onClose={onClose}
       anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-      PaperProps={{ sx: { width: 380, maxHeight: 480 } }}
+      PaperProps={{ sx: { width: 360, maxHeight: 460, mt: 1 } }}
     >
-      <Box sx={{ px: 2, py: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Typography variant="subtitle1" fontWeight={600}>Notifications</Typography>
-        <Button size="small" onClick={handleMarkAllRead}>Mark all read</Button>
+      <Box
+        sx={{
+          px: 2.5,
+          py: 1.75,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          borderBottom: '1px solid #1E2030',
+        }}
+      >
+        <Typography sx={{ fontFamily: '"Syne", sans-serif', fontWeight: 600, fontSize: '0.9rem', color: '#E8E9F3' }}>
+          Notifications
+        </Typography>
+        <Button
+          size="small"
+          onClick={handleMarkAllRead}
+          sx={{ fontSize: '0.75rem', color: '#F5A623', px: 1, py: 0.4, minWidth: 'auto' }}
+        >
+          Mark all read
+        </Button>
       </Box>
-      <Divider />
+
       {loading ? (
         <Box sx={{ p: 3, display: 'flex', justifyContent: 'center' }}>
-          <CircularProgress size={24} />
+          <CircularProgress size={20} sx={{ color: '#F5A623' }} />
         </Box>
       ) : notifications.length === 0 ? (
-        <Box sx={{ p: 3 }}>
-          <Typography variant="body2" color="text.secondary" align="center">No notifications</Typography>
+        <Box sx={{ py: 5, textAlign: 'center' }}>
+          <Typography sx={{ fontSize: '0.83rem', color: '#4A4E65' }}>
+            No notifications
+          </Typography>
         </Box>
       ) : (
-        <List disablePadding dense>
-          {notifications.map((n) => (
-            <Box key={n.id}>
-              <ListItem
-                alignItems="flex-start"
-                sx={{
-                  backgroundColor: n.status !== 'READ' ? 'action.hover' : 'transparent',
-                  cursor: n.status !== 'READ' ? 'pointer' : 'default',
-                  py: 1.5,
-                }}
-                onClick={() => n.id && n.status !== 'READ' && handleMarkRead(n.id)}
-              >
-                <ListItemText
-                  primary={
-                    <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
-                      <ConfidenceBadge confidence={n.deal?.confidence} />
-                      <Typography variant="body2" fontWeight={n.status !== 'READ' ? 600 : 400}>
-                        {n.deal?.siteName ?? 'Unknown site'}
-                      </Typography>
-                    </Box>
-                  }
-                  secondary={
-                    <Box component="span">
-                      <Typography variant="caption" color="text.secondary" component="span">
-                        {n.deal?.title ?? n.deal?.description ?? 'Deal detected'}
-                      </Typography>
-                      <Typography variant="caption" color="text.disabled" display="block" component="span">
-                        <TimeAgo dateString={n.createdAt} />
-                      </Typography>
-                    </Box>
-                  }
-                />
-              </ListItem>
-              <Divider component="li" />
+        notifications.map((n) => (
+          <Box key={n.id}>
+            <Box
+              onClick={() => n.id && n.status !== 'READ' && handleMarkRead(n.id)}
+              sx={{
+                px: 2.5,
+                py: 1.75,
+                backgroundColor: n.status !== 'READ' ? 'rgba(245,166,35,0.04)' : 'transparent',
+                cursor: n.status !== 'READ' ? 'pointer' : 'default',
+                transition: 'background 0.12s ease',
+                '&:hover': n.status !== 'READ' ? { backgroundColor: 'rgba(245,166,35,0.07)' } : {},
+                borderLeft: n.status !== 'READ' ? '2px solid rgba(245,166,35,0.4)' : '2px solid transparent',
+              }}
+            >
+              <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap', mb: 0.4 }}>
+                <ConfidenceBadge confidence={n.deal?.confidence} />
+                <Typography sx={{ fontSize: '0.85rem', fontWeight: n.status !== 'READ' ? 600 : 400, color: '#E8E9F3' }}>
+                  {n.deal?.siteName ?? 'Unknown site'}
+                </Typography>
+              </Box>
+              <Typography sx={{ fontSize: '0.78rem', color: '#8890A8', mb: 0.4, lineHeight: 1.4 }}>
+                {n.deal?.title ?? n.deal?.description ?? 'Deal detected'}
+              </Typography>
+              <Typography sx={{ fontSize: '0.7rem', color: '#4A4E65' }}>
+                <TimeAgo dateString={n.createdAt} />
+              </Typography>
             </Box>
-          ))}
-        </List>
+            <Divider />
+          </Box>
+        ))
       )}
     </Popover>
   );

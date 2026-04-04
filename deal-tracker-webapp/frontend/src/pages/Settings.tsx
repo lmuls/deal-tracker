@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
+import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardHeader from '@mui/material/CardHeader';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import MenuItem from '@mui/material/MenuItem';
@@ -10,7 +8,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
 import Skeleton from '@mui/material/Skeleton';
-import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
 import { getPreferences, updatePreferences } from '../api/generated';
 import type { EmailFrequency, PreferencesResponse } from '../api/generated';
 
@@ -54,54 +52,116 @@ export default function Settings() {
 
   return (
     <>
-      <Typography variant="h5" fontWeight={700} sx={{ mb: 3 }}>Settings</Typography>
-      <Card elevation={1} sx={{ maxWidth: 560 }}>
-        <CardHeader title="Notification Preferences" titleTypographyProps={{ variant: 'h6', fontWeight: 600 }} />
-        <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h5" sx={{ mb: 0.25 }}>
+          Settings
+        </Typography>
+        <Typography sx={{ fontSize: '0.82rem', color: '#4A4E65' }}>
+          Manage your notification preferences
+        </Typography>
+      </Box>
+
+      <Box
+        sx={{
+          backgroundColor: '#0F1016',
+          border: '1px solid #1E2030',
+          borderRadius: 3,
+          maxWidth: 520,
+          overflow: 'hidden',
+        }}
+      >
+        <Box sx={{ px: 3, py: 2.5, borderBottom: '1px solid #1E2030' }}>
+          <Typography sx={{ fontFamily: '"Syne", sans-serif', fontWeight: 600, fontSize: '0.95rem', color: '#E8E9F3' }}>
+            Notifications
+          </Typography>
+        </Box>
+
+        <Box sx={{ px: 3, py: 3 }}>
           {loading ? (
-            <>{[0, 1, 2].map((i) => <Skeleton key={i} height={40} />)}</>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              {[0, 1, 2].map((i) => <Skeleton key={i} height={40} sx={{ borderRadius: 1 }} />)}
+            </Box>
           ) : (
-            <>
-              {error && <Alert severity="error">{error}</Alert>}
-              {saved && <Alert severity="success">Preferences saved.</Alert>}
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={prefs?.notifyInApp ?? true}
-                    onChange={(e) => setPrefs((p) => p ? { ...p, notifyInApp: e.target.checked } : p)}
-                  />
-                }
-                label="In-app notifications"
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={prefs?.notifyEmail ?? false}
-                    onChange={(e) => setPrefs((p) => p ? { ...p, notifyEmail: e.target.checked } : p)}
-                  />
-                }
-                label="Email notifications"
-              />
-              {prefs?.notifyEmail && (
-                <TextField
-                  select label="Email frequency" size="small" sx={{ maxWidth: 280 }}
-                  value={prefs?.emailFrequency ?? 'INSTANT'}
-                  onChange={(e) => setPrefs((p) => p ? { ...p, emailFrequency: e.target.value as EmailFrequency } : p)}
-                >
-                  {FREQUENCY_OPTIONS.map((opt) => (
-                    <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>
-                  ))}
-                </TextField>
-              )}
-              <Box>
-                <Button variant="contained" onClick={handleSave} disabled={saving}>
-                  {saving ? 'Saving…' : 'Save'}
-                </Button>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+              {error && <Alert severity="error" sx={{ mb: 2.5, borderRadius: 2 }}>{error}</Alert>}
+              {saved && <Alert severity="success" sx={{ mb: 2.5, borderRadius: 2 }}>Preferences saved.</Alert>}
+
+              <Box sx={{ py: 1.5 }}>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={prefs?.notifyInApp ?? true}
+                      onChange={(e) => setPrefs((p) => p ? { ...p, notifyInApp: e.target.checked } : p)}
+                      size="small"
+                    />
+                  }
+                  label={
+                    <Box sx={{ ml: 0.5 }}>
+                      <Typography sx={{ fontSize: '0.88rem', fontWeight: 500, color: '#E8E9F3' }}>In-app notifications</Typography>
+                      <Typography sx={{ fontSize: '0.75rem', color: '#4A4E65' }}>Show a bell indicator when deals are found</Typography>
+                    </Box>
+                  }
+                  sx={{ alignItems: 'flex-start', m: 0, gap: 1 }}
+                />
               </Box>
-            </>
+
+              <Divider />
+
+              <Box sx={{ py: 1.5 }}>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={prefs?.notifyEmail ?? false}
+                      onChange={(e) => setPrefs((p) => p ? { ...p, notifyEmail: e.target.checked } : p)}
+                      size="small"
+                    />
+                  }
+                  label={
+                    <Box sx={{ ml: 0.5 }}>
+                      <Typography sx={{ fontSize: '0.88rem', fontWeight: 500, color: '#E8E9F3' }}>Email notifications</Typography>
+                      <Typography sx={{ fontSize: '0.75rem', color: '#4A4E65' }}>Receive deal alerts via email</Typography>
+                    </Box>
+                  }
+                  sx={{ alignItems: 'flex-start', m: 0, gap: 1 }}
+                />
+              </Box>
+
+              {prefs?.notifyEmail && (
+                <>
+                  <Divider />
+                  <Box sx={{ py: 2 }}>
+                    <Typography sx={{ fontSize: '0.8rem', color: '#8890A8', mb: 1.25 }}>Email frequency</Typography>
+                    <TextField
+                      select
+                      size="small"
+                      sx={{ width: 260 }}
+                      value={prefs?.emailFrequency ?? 'INSTANT'}
+                      onChange={(e) => setPrefs((p) => p ? { ...p, emailFrequency: e.target.value as EmailFrequency } : p)}
+                    >
+                      {FREQUENCY_OPTIONS.map((opt) => (
+                        <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>
+                      ))}
+                    </TextField>
+                  </Box>
+                </>
+              )}
+            </Box>
           )}
-        </CardContent>
-      </Card>
+        </Box>
+
+        {!loading && (
+          <Box sx={{ px: 3, pb: 3 }}>
+            <Button
+              variant="contained"
+              onClick={handleSave}
+              disabled={saving}
+              sx={{ boxShadow: '0 0 14px rgba(245,166,35,0.15)' }}
+            >
+              {saving ? 'Saving…' : 'Save changes'}
+            </Button>
+          </Box>
+        )}
+      </Box>
     </>
   );
 }

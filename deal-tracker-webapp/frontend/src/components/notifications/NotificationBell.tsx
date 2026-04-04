@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
-import NotificationsIcon from '@mui/icons-material/Notifications';
+import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
 import { usePolling } from '../../hooks/usePolling';
 import { getUnreadCount } from '../../api/generated';
 import NotificationPanel from './NotificationPanel';
@@ -28,9 +28,19 @@ export default function NotificationBell() {
 
   return (
     <>
-      <IconButton color="inherit" onClick={handleOpen} size="large">
-        <Badge badgeContent={unread} color="error" max={99}>
-          <NotificationsIcon />
+      <IconButton onClick={handleOpen} size="medium">
+        <Badge
+          badgeContent={unread}
+          color="error"
+          max={99}
+          sx={{
+            '& .MuiBadge-badge': {
+              backgroundColor: '#F5A623',
+              color: '#07080D',
+            },
+          }}
+        >
+          <NotificationsRoundedIcon sx={{ fontSize: '1.1rem' }} />
         </Badge>
       </IconButton>
       <NotificationPanel

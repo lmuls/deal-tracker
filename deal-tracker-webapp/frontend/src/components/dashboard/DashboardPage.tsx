@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { listActiveDeals, listSites } from '../../api/generated';
 import type { DealResponse, SiteResponse } from '../../api/generated';
@@ -39,14 +40,16 @@ export default function DashboardPage() {
 
   return (
     <>
-      <Typography variant="h5" fontWeight={700} sx={{ mb: 3 }}>
-        Dashboard
-      </Typography>
-      <StatsCards
-        totalSites={sites.length}
-        activeDeals={deals.length}
-        dealsToday={dealsToday}
-      />
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h5" sx={{ mb: 0.25 }}>
+          Dashboard
+        </Typography>
+        <Typography sx={{ fontSize: '0.82rem', color: '#4A4E65' }}>
+          Live overview of all tracked sites and active deals
+        </Typography>
+      </Box>
+
+      <StatsCards totalSites={sites.length} activeDeals={deals.length} dealsToday={dealsToday} />
       <ActiveDealsFeed deals={deals} loading={dealsLoading} />
       <SiteStatusGrid sites={sites} loading={sitesLoading} />
     </>

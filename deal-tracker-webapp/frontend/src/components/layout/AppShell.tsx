@@ -10,7 +10,7 @@ const TOPBAR_HEIGHT = 64;
 
 export default function AppShell() {
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#07080D' }}>
       <TopBar sidebarWidth={SIDEBAR_WIDTH} topBarHeight={TOPBAR_HEIGHT} />
       <Sidebar width={SIDEBAR_WIDTH} topBarHeight={TOPBAR_HEIGHT} />
       <Box
@@ -18,12 +18,14 @@ export default function AppShell() {
         sx={{
           flexGrow: 1,
           ml: `${SIDEBAR_WIDTH}px`,
-          backgroundColor: '#f5f5f5',
           minHeight: '100vh',
+          backgroundColor: '#07080D',
+          backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.025) 1px, transparent 0)`,
+          backgroundSize: '28px 28px',
         }}
       >
-        <Toolbar />
-        <Box sx={{ p: 3 }}>
+        <Toolbar sx={{ minHeight: `${TOPBAR_HEIGHT}px !important` }} />
+        <Box sx={{ p: 3.5 }}>
           <AppBreadcrumbs />
           <Outlet />
         </Box>
