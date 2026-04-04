@@ -36,7 +36,7 @@ public class SiteService {
 
     @Transactional
     public SiteResponse createSite(CreateSiteRequest req) {
-        var user = userContext.getDefaultUser();
+        var user = userContext.getCurrentUser();
         var site = siteRepository.save(TrackedSite.builder()
                 .user(user)
                 .url(req.getUrl().toString())

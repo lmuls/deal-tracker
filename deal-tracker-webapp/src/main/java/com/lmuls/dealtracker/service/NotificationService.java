@@ -22,7 +22,7 @@ public class NotificationService {
 
     @Transactional(readOnly = true)
     public NotificationPageResponse listNotifications(int page, int size) {
-        var user = userContext.getDefaultUser();
+        var user = userContext.getCurrentUser();
         var result = notificationRepository
                 .findByUserIdOrderByCreatedAtDesc(user.getId(), PageRequest.of(page, size));
 
@@ -36,7 +36,7 @@ public class NotificationService {
 
     @Transactional(readOnly = true)
     public UnreadCountResponse getUnreadCount() {
-        var user = userContext.getDefaultUser();
+        var user = userContext.getCurrentUser();
         long count = notificationRepository.countByUserIdAndStatus(user.getId(), NotificationStatus.SENT);
         return new UnreadCountResponse().count(count);
     }
@@ -51,7 +51,7 @@ public class NotificationService {
 
     @Transactional
     public void markAllRead() {
-        var user = userContext.getDefaultUser();
+        var user = userContext.getCurrentUser();
         var unread = notificationRepository.findByUserIdOrderByCreatedAtDesc(user.getId())
                 .stream()
                 .filter(n -> n.getStatus() == NotificationStatus.SENT)

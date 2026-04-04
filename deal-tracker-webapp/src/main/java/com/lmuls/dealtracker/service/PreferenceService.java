@@ -18,7 +18,7 @@ public class PreferenceService {
 
     @Transactional(readOnly = true)
     public PreferencesResponse getPreferences() {
-        var user = userContext.getDefaultUser();
+        var user = userContext.getCurrentUser();
         var prefs = preferenceRepository.findByUserId(user.getId())
                 .orElseGet(() -> UserPreference.builder().user(user).build());
         return DtoMapper.toPreferencesResponse(prefs);
@@ -26,7 +26,7 @@ public class PreferenceService {
 
     @Transactional
     public PreferencesResponse updatePreferences(UpdatePreferencesRequest req) {
-        var user = userContext.getDefaultUser();
+        var user = userContext.getCurrentUser();
         var prefs = preferenceRepository.findByUserId(user.getId())
                 .orElseGet(() -> UserPreference.builder().user(user).build());
 
