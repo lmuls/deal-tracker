@@ -18,3 +18,10 @@ parser:
   snapshot-dir: /data/snapshots
   default-locale: en
   poll-interval-ms: 30000
+  llm:
+    enabled: false                    # opt-in; set to true and provide api-key to activate
+    api-key: ${ANTHROPIC_API_KEY:}
+    model: claude-haiku-4-5-20251001
+    max-tokens: 600
+    page-text-max-chars: 4000
+    base-url: https://api.anthropic.com
