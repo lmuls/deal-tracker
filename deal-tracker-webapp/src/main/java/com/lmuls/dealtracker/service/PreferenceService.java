@@ -5,16 +5,19 @@ import com.lmuls.dealtracker.api.model.UpdatePreferencesRequest;
 import com.lmuls.dealtracker.entity.UserPreference;
 import com.lmuls.dealtracker.enums.EmailFrequency;
 import com.lmuls.dealtracker.repository.UserPreferenceRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
 public class PreferenceService {
 
     private final UserPreferenceRepository preferenceRepository;
     private final UserContext userContext;
+
+    public PreferenceService(UserPreferenceRepository preferenceRepository, UserContext userContext) {
+        this.preferenceRepository = preferenceRepository;
+        this.userContext = userContext;
+    }
 
     @Transactional(readOnly = true)
     public PreferencesResponse getPreferences() {

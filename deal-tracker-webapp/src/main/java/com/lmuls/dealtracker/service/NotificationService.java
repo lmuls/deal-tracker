@@ -4,7 +4,6 @@ import com.lmuls.dealtracker.api.model.NotificationPageResponse;
 import com.lmuls.dealtracker.api.model.UnreadCountResponse;
 import com.lmuls.dealtracker.enums.NotificationStatus;
 import com.lmuls.dealtracker.repository.NotificationRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -14,11 +13,15 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final UserContext userContext;
+
+    public NotificationService(NotificationRepository notificationRepository, UserContext userContext) {
+        this.notificationRepository = notificationRepository;
+        this.userContext = userContext;
+    }
 
     @Transactional(readOnly = true)
     public NotificationPageResponse listNotifications(int page, int size) {

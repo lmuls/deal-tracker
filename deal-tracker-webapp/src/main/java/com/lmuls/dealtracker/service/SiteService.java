@@ -7,7 +7,6 @@ import com.lmuls.dealtracker.api.model.UpdateSiteRequest;
 import com.lmuls.dealtracker.entity.TrackedSite;
 import com.lmuls.dealtracker.repository.DealRepository;
 import com.lmuls.dealtracker.repository.TrackedSiteRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,12 +16,17 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 public class SiteService {
 
     private final TrackedSiteRepository siteRepository;
     private final DealRepository dealRepository;
     private final UserContext userContext;
+
+    public SiteService(TrackedSiteRepository siteRepository, DealRepository dealRepository, UserContext userContext) {
+        this.siteRepository = siteRepository;
+        this.dealRepository = dealRepository;
+        this.userContext = userContext;
+    }
 
     @Transactional(readOnly = true)
     public List<SiteResponse> listSites() {
