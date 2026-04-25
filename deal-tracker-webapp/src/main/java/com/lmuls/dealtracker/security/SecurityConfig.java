@@ -3,6 +3,7 @@ package com.lmuls.dealtracker.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -15,6 +16,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.util.Map;
 
@@ -25,6 +27,9 @@ public class SecurityConfig {
 
     private final DealTrackerUserDetailsService userDetailsService;
     private final ObjectMapper objectMapper;
+
+    @Autowired(required = false)
+    private DevAuthBypassFilter devAuthBypassFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -45,6 +50,10 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        if (devAuthBypassFilter != null) {
+            http.addFilterBefore(devAuthBypassFilter, UsernamePasswordAuthenticationFilter.class);
+        }
+
         http
             .csrf(AbstractHttpConfigurer::disable)
             .securityContext(ctx -> ctx.requireExplicitSave(false))

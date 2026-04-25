@@ -1,0 +1,5 @@
+app:
+  dev:
+    # Set to true to skip login entirely during local development.
+    # Injects a pre-authenticated dev user for every request.
+    bypass-auth: true
