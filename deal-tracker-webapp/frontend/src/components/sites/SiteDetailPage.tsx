@@ -1,4 +1,17 @@
 import { useState, useEffect, useCallback } from 'react';
+
+function formatInterval(iso: string): string {
+  const map: Record<string, string> = {
+    'PT30M': '30 minutes',
+    'PT1H':  '1 hour',
+    'PT6H':  '6 hours',
+    'PT12H': '12 hours',
+    'P1D':   '24 hours',
+    'P2D':   '2 days',
+    'P7D':   '7 days',
+  };
+  return map[iso] ?? iso;
+}
 import { useParams, useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -166,7 +179,7 @@ export default function SiteDetailPage() {
           </Typography>
         )}
         <Typography sx={{ fontSize: '0.8rem', color: '#8890A8' }}>
-          Check interval: <Box component="span" sx={{ color: '#E8E9F3', fontWeight: 500 }}>{site.checkInterval}</Box>
+          Check interval: <Box component="span" sx={{ color: '#E8E9F3', fontWeight: 500 }}>{formatInterval(site.checkInterval)}</Box>
         </Typography>
       </Box>
 

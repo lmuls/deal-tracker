@@ -27,7 +27,7 @@ const INTERVALS = [
 export default function AddSiteDialog({ open, onClose, onCreated }: Props) {
   const [url, setUrl] = useState('');
   const [name, setName] = useState('');
-  const [checkInterval, setCheckInterval] = useState('PT1H');
+  const [checkInterval, setCheckInterval] = useState('P1D');
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -39,7 +39,7 @@ export default function AddSiteDialog({ open, onClose, onCreated }: Props) {
     if (err) {
       setError('Failed to add site');
     } else {
-      setUrl(''); setName(''); setCheckInterval('PT1H');
+      setUrl(''); setName(''); setCheckInterval('P1D');
       onCreated();
       onClose();
     }
