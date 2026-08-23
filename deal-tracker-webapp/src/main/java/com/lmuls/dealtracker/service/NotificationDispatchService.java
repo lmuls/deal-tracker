@@ -59,7 +59,7 @@ public class NotificationDispatchService {
     @Scheduled(fixedDelayString = "${webapp.dispatch-interval-ms:30000}")
     public void dispatchNotifications() {
         Instant since = lastProcessed.get();
-        List<Deal> newDeals = dealRepository.findByDetectedAtAfterOrderByDetectedAtAsc(since);
+        List<Deal> newDeals = dealRepository.findByActiveTrueAndDetectedAtAfterOrderByDetectedAtAsc(since);
         if (newDeals.isEmpty()) return;
 
         log.debug("Dispatch tick — {} new deal(s) since {}", newDeals.size(), since);
@@ -78,7 +78,7 @@ public class NotificationDispatchService {
         if (emailService == null) return;
 
         Instant since = Instant.now().minus(24, ChronoUnit.HOURS);
-        List<Deal> recentDeals = dealRepository.findByDetectedAtAfterOrderByDetectedAtAsc(since);
+        List<Deal> recentDeals = dealRepository.findByActiveTrueAndDetectedAtAfterOrderByDetectedAtAsc(since);
         if (recentDeals.isEmpty()) return;
 
         for (User user : userRepository.findAll()) {

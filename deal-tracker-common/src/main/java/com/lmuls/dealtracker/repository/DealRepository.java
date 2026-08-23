@@ -28,6 +28,8 @@ public interface DealRepository extends JpaRepository<Deal, UUID> {
 
     List<Deal> findByDetectedAtAfterOrderByDetectedAtAsc(Instant after);
 
+    List<Deal> findByActiveTrueAndDetectedAtAfterOrderByDetectedAtAsc(Instant after);
+
     /**
      * Filtered paginated query — all parameters are optional (null = no filter applied).
      */

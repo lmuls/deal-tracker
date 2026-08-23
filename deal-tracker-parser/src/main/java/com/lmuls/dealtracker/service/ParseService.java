@@ -7,8 +7,10 @@ import com.lmuls.dealtracker.entity.Snapshot;
 import com.lmuls.dealtracker.enums.Confidence;
 import com.lmuls.dealtracker.enums.SnapshotStatus;
 import com.lmuls.dealtracker.model.DealDetection;
+import com.lmuls.dealtracker.repository.DealFeedbackRepository;
 import com.lmuls.dealtracker.repository.DealRepository;
 import com.lmuls.dealtracker.repository.SnapshotRepository;
+import com.lmuls.dealtracker.util.TitleNormalizer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
@@ -23,6 +25,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Orchestrates the 3-layer detection pipeline for a single snapshot.
@@ -45,6 +49,7 @@ public class ParseService {
     private final ExpiryExtractor expiryExtractor;
     private final DealRepository dealRepository;
     private final SnapshotRepository snapshotRepository;
+    private final DealFeedbackRepository dealFeedbackRepository;
 
     /**
      * Parses the given snapshot: reads HTML from disk, runs all detection
@@ -110,18 +115,13 @@ public class ParseService {
     private static List<DealDetection> deduplicate(List<DealDetection> detections) {
         var best = new java.util.LinkedHashMap<String, DealDetection>();
         for (DealDetection d : detections) {
-            String key = normaliseTitle(d.title());
+            String key = TitleNormalizer.normalize(d.title());
             DealDetection existing = best.get(key);
             if (existing == null || confidenceOrdinal(d.confidence()) < confidenceOrdinal(existing.confidence())) {
                 best.put(key, d);
             }
         }
         return List.copyOf(best.values());
-    }
-
-    private static String normaliseTitle(String title) {
-        if (title == null) return "";
-        return title.toLowerCase(Locale.ROOT).replaceAll("\\s+", " ").trim();
     }
 
     /** Lower ordinal = higher priority (HIGH=0, MEDIUM=1, LOW=2). */
@@ -135,7 +135,11 @@ public class ParseService {
 
     @Transactional
     protected void persistResults(Snapshot snapshot, List<DealDetection> detections) {
+        UUID siteId = snapshot.getTrackedSite().getId();
+        Set<String> blocked = dealFeedbackRepository.findNormalizedTitlesByTrackedSiteId(siteId);
+
         for (DealDetection d : detections) {
+            boolean isBlocked = blocked.contains(TitleNormalizer.normalize(d.title()));
             dealRepository.save(Deal.builder()
                     .snapshot(snapshot)
                     .trackedSite(snapshot.getTrackedSite())
@@ -146,6 +150,7 @@ public class ParseService {
                     .confidence(d.confidence())
                     .detectionLayer(d.detectionLayer())
                     .expiresAt(d.expiresAt())
+                    .active(!isBlocked)
                     .build());
         }
         snapshot.setStatus(SnapshotStatus.PARSED);

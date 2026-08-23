@@ -30,7 +30,11 @@ import PauseRoundedIcon from '@mui/icons-material/PauseRounded';
 import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import OpenInNewRoundedIcon from '@mui/icons-material/OpenInNewRounded';
-import { getSite, updateSite, deleteSite, listSiteDeals } from '../../api/generated';
+import BlockRoundedIcon from '@mui/icons-material/BlockRounded';
+import RestoreRoundedIcon from '@mui/icons-material/RestoreRounded';
+import Snackbar from '@mui/material/Snackbar';
+import Button from '@mui/material/Button';
+import { getSite, updateSite, deleteSite, listSiteDeals, markDealInvalid, restoreDeal } from '../../api/generated';
 import type { SiteDetailResponse, DealResponse } from '../../api/generated';
 import ConfidenceBadge from '../common/ConfidenceBadge';
 import DealTypeBadge from '../common/DealTypeBadge';
@@ -47,6 +51,9 @@ export default function SiteDetailPage() {
   const [loading, setLoading] = useState(true);
   const [dealsLoading, setDealsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ open: boolean; dealId: string; action: 'invalidated' | 'restored' }>({
+    open: false, dealId: '', action: 'invalidated',
+  });
 
   const loadSite = useCallback(async () => {
     if (!id) return;
@@ -71,6 +78,18 @@ export default function SiteDetailPage() {
     if (!site?.id) return;
     await updateSite({ path: { id: site.id }, body: { active: !site.active } });
     loadSite();
+  };
+
+  const handleInvalidate = async (dealId: string) => {
+    await markDealInvalid({ path: { id: dealId } });
+    setToast({ open: true, dealId, action: 'invalidated' });
+    loadDeals();
+  };
+
+  const handleRestore = async (dealId: string) => {
+    await restoreDeal({ path: { id: dealId } });
+    setToast({ open: true, dealId, action: 'restored' });
+    loadDeals();
   };
 
   const handleDelete = async () => {
@@ -179,7 +198,7 @@ export default function SiteDetailPage() {
           </Typography>
         )}
         <Typography sx={{ fontSize: '0.8rem', color: '#8890A8' }}>
-          Check interval: <Box component="span" sx={{ color: '#E8E9F3', fontWeight: 500 }}>{formatInterval(site.checkInterval)}</Box>
+          Check interval: <Box component="span" sx={{ color: '#E8E9F3', fontWeight: 500 }}>{site.checkInterval ? formatInterval(site.checkInterval) : '—'}</Box>
         </Typography>
       </Box>
 
@@ -223,6 +242,7 @@ export default function SiteDetailPage() {
                   <TableCell>Detected</TableCell>
                   <TableCell>Expires</TableCell>
                   <TableCell>Status</TableCell>
+                  <TableCell></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -262,22 +282,64 @@ export default function SiteDetailPage() {
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Box
-                        component="span"
-                        sx={{
-                          fontSize: '0.63rem',
-                          fontWeight: 700,
-                          letterSpacing: '0.05em',
-                          color: deal.active ? '#22D98C' : '#4A4E65',
-                          backgroundColor: deal.active ? 'rgba(34,217,140,0.1)' : 'rgba(74,78,101,0.08)',
-                          border: `1px solid ${deal.active ? 'rgba(34,217,140,0.25)' : 'rgba(74,78,101,0.15)'}`,
-                          px: '6px',
-                          py: '2px',
-                          borderRadius: '4px',
-                        }}
-                      >
-                        {deal.active ? 'ACTIVE' : 'EXPIRED'}
-                      </Box>
+                      {deal.markedInvalid ? (
+                        <Box
+                          component="span"
+                          sx={{
+                            fontSize: '0.63rem',
+                            fontWeight: 700,
+                            letterSpacing: '0.05em',
+                            color: '#FF4D6D',
+                            backgroundColor: 'rgba(255,77,109,0.08)',
+                            border: '1px solid rgba(255,77,109,0.2)',
+                            px: '6px',
+                            py: '2px',
+                            borderRadius: '4px',
+                          }}
+                        >
+                          INVALID
+                        </Box>
+                      ) : (
+                        <Box
+                          component="span"
+                          sx={{
+                            fontSize: '0.63rem',
+                            fontWeight: 700,
+                            letterSpacing: '0.05em',
+                            color: deal.active ? '#22D98C' : '#4A4E65',
+                            backgroundColor: deal.active ? 'rgba(34,217,140,0.1)' : 'rgba(74,78,101,0.08)',
+                            border: `1px solid ${deal.active ? 'rgba(34,217,140,0.25)' : 'rgba(74,78,101,0.15)'}`,
+                            px: '6px',
+                            py: '2px',
+                            borderRadius: '4px',
+                          }}
+                        >
+                          {deal.active ? 'ACTIVE' : 'EXPIRED'}
+                        </Box>
+                      )}
+                    </TableCell>
+                    <TableCell sx={{ p: '4px 8px' }}>
+                      {deal.markedInvalid ? (
+                        <Tooltip title="Restore deal" arrow>
+                          <IconButton
+                            size="small"
+                            onClick={() => handleRestore(deal.id!)}
+                            sx={{ color: '#4A4E65', '&:hover': { color: '#22D98C', backgroundColor: 'rgba(34,217,140,0.1)' } }}
+                          >
+                            <RestoreRoundedIcon sx={{ fontSize: '0.95rem' }} />
+                          </IconButton>
+                        </Tooltip>
+                      ) : (
+                        <Tooltip title="Not a real deal" arrow>
+                          <IconButton
+                            size="small"
+                            onClick={() => handleInvalidate(deal.id!)}
+                            sx={{ color: '#4A4E65', '&:hover': { color: '#FF4D6D', backgroundColor: 'rgba(255,77,109,0.1)' } }}
+                          >
+                            <BlockRoundedIcon sx={{ fontSize: '0.95rem' }} />
+                          </IconButton>
+                        </Tooltip>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -294,6 +356,28 @@ export default function SiteDetailPage() {
           </TableContainer>
         )}
       </Box>
+
+      <Snackbar
+        open={toast.open}
+        autoHideDuration={4000}
+        onClose={() => setToast((t) => ({ ...t, open: false }))}
+        message={toast.action === 'invalidated' ? 'Deal marked as not valid' : 'Deal restored'}
+        action={
+          toast.action === 'invalidated' ? (
+            <Button
+              size="small"
+              sx={{ color: '#F5A623', fontWeight: 600 }}
+              onClick={async () => {
+                setToast((t) => ({ ...t, open: false }));
+                await handleRestore(toast.dealId);
+              }}
+            >
+              UNDO
+            </Button>
+          ) : undefined
+        }
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      />
     </>
   );
 }

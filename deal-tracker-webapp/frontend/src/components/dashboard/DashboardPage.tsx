@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { listActiveDeals, listSites } from '../../api/generated';
@@ -24,17 +24,20 @@ export default function DashboardPage() {
   const [dealsLoading, setDealsLoading] = useState(true);
   const [sitesLoading, setSitesLoading] = useState(true);
 
-  useEffect(() => {
+  const loadDeals = useCallback(() => {
     listActiveDeals().then(({ data }) => {
       setDeals(data ?? []);
       setDealsLoading(false);
     });
+  }, []);
 
+  useEffect(() => {
+    loadDeals();
     listSites().then(({ data }) => {
       setSites(data ?? []);
       setSitesLoading(false);
     });
-  }, []);
+  }, [loadDeals]);
 
   const dealsToday = deals.filter((d) => isToday(d.detectedAt)).length;
 
@@ -50,7 +53,7 @@ export default function DashboardPage() {
       </Box>
 
       <StatsCards totalSites={sites.length} activeDeals={deals.length} dealsToday={dealsToday} />
-      <ActiveDealsFeed deals={deals} loading={dealsLoading} />
+      <ActiveDealsFeed deals={deals} loading={dealsLoading} onDealInvalidated={loadDeals} />
       <SiteStatusGrid sites={sites} loading={sitesLoading} />
     </>
   );

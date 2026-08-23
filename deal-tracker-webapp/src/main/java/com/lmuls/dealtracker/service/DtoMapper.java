@@ -2,10 +2,12 @@ package com.lmuls.dealtracker.service;
 
 import com.lmuls.dealtracker.api.model.*;
 import com.lmuls.dealtracker.entity.*;
+import com.lmuls.dealtracker.util.TitleNormalizer;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Stateless helper that maps JPA entities to generated OpenAPI DTO classes.
@@ -42,6 +44,11 @@ final class DtoMapper {
     }
 
     static DealResponse toDealResponse(Deal deal) {
+        return toDealResponse(deal, Set.of());
+    }
+
+    static DealResponse toDealResponse(Deal deal, Set<String> blockedKeys) {
+        String key = deal.getTrackedSite().getId() + "::" + TitleNormalizer.normalize(deal.getTitle());
         return new DealResponse()
                 .id(deal.getId())
                 .siteId(deal.getTrackedSite().getId())
@@ -55,7 +62,8 @@ final class DtoMapper {
                 .detectedAt(deal.getDetectedAt().atOffset(ZoneOffset.UTC))
                 .expiresAt(deal.getExpiresAt() != null
                         ? deal.getExpiresAt().atOffset(ZoneOffset.UTC) : null)
-                .active(deal.getActive());
+                .active(deal.getActive())
+                .markedInvalid(blockedKeys.contains(key));
     }
 
     static NotificationResponse toNotificationResponse(Notification n) {

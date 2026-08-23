@@ -189,6 +189,40 @@ paths:
                 items:
                   $ref: '#/components/schemas/DealResponse'
 
+  /deals/{id}/invalidate:
+    post:
+      tags: [Deals]
+      summary: Mark a deal as invalid (false positive). Idempotent.
+      operationId: markDealInvalid
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Marked invalid
+        '404':
+          description: Deal not found
+    delete:
+      tags: [Deals]
+      summary: Undo a previous invalidation, restoring the deal to active.
+      operationId: restoreDeal
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Restored
+        '404':
+          description: Deal not found
+
   # ── Notifications ───────────────────────────────────────────────────────────
   /notifications:
     get:
@@ -374,6 +408,8 @@ components:
           type: string
           format: date-time
         active:
+          type: boolean
+        markedInvalid:
           type: boolean
 
     DealPageResponse:

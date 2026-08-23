@@ -34,4 +34,16 @@ public class DealController implements DealsApi {
     public ResponseEntity<DealPageResponse> listSiteDeals(UUID id, Integer page, Integer size) {
         return ResponseEntity.ok(dealService.listSiteDeals(id, page, size));
     }
+
+    @Override
+    public ResponseEntity<Void> markDealInvalid(UUID id) {
+        dealService.markInvalid(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<Void> restoreDeal(UUID id) {
+        dealService.restore(id);
+        return ResponseEntity.noContent().build();
+    }
 }
