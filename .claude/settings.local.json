@@ -6,7 +6,8 @@
       "Bash(./mvnw test:*)",
       "Bash(npm install:*)",
       "Bash(npm run:*)",
-      "Bash(node_modules/.bin/openapi-ts)"
+      "Bash(node_modules/.bin/openapi-ts)",
+      "Bash(docker info *)"
     ]
   }
 }

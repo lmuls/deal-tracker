@@ -20,9 +20,12 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Orchestrates the 3-layer detection pipeline for a single snapshot.
@@ -135,21 +138,79 @@ public class ParseService {
 
     @Transactional
     protected void persistResults(Snapshot snapshot, List<DealDetection> detections) {
+        List<Deal> activeSiteDeals = new ArrayList<>(
+                dealRepository.findByTrackedSiteIdAndActiveTrue(snapshot.getTrackedSite().getId()));
+
         for (DealDetection d : detections) {
-            dealRepository.save(Deal.builder()
-                    .snapshot(snapshot)
-                    .trackedSite(snapshot.getTrackedSite())
-                    .type(d.type())
-                    .title(d.title())
-                    .description(d.description())
-                    .discountValue(d.discountValue())
-                    .confidence(d.confidence())
-                    .detectionLayer(d.detectionLayer())
-                    .expiresAt(d.expiresAt())
-                    .build());
+            upsertDeal(snapshot, d, activeSiteDeals);
         }
         snapshot.setStatus(SnapshotStatus.PARSED);
         snapshotRepository.save(snapshot);
+    }
+
+    /**
+     * Matches a detection against the site's current active deals by normalised title.
+     * No match creates a new deal; an unchanged match bumps its observation count; a
+     * changed match supersedes the old deal with a new versioned row referencing it.
+     */
+    private void upsertDeal(Snapshot snapshot, DealDetection d, List<Deal> activeSiteDeals) {
+        Deal match = findActiveMatch(activeSiteDeals, d.title());
+
+        if (match == null) {
+            activeSiteDeals.add(insertNewDeal(snapshot, d, null));
+            return;
+        }
+        if (contentEquals(d, match)) {
+            touchExistingDeal(snapshot, match);
+            return;
+        }
+        match.setActive(false);
+        dealRepository.save(match);
+        Deal created = insertNewDeal(snapshot, d, match);
+        activeSiteDeals.remove(match);
+        activeSiteDeals.add(created);
+    }
+
+    private static Deal findActiveMatch(List<Deal> candidates, String title) {
+        String key = normaliseTitle(title);
+        return candidates.stream()
+                .filter(c -> normaliseTitle(c.getTitle()).equals(key))
+                .max(Comparator.comparing(Deal::getLastSeenAt))
+                .orElse(null);
+    }
+
+    private static boolean contentEquals(DealDetection d, Deal existing) {
+        return Objects.equals(d.type(), existing.getType())
+                && Objects.equals(d.discountValue(), existing.getDiscountValue())
+                && Objects.equals(d.description(), existing.getDescription())
+                && Objects.equals(d.expiresAt(), existing.getExpiresAt());
+    }
+
+    private Deal insertNewDeal(Snapshot snapshot, DealDetection d, Deal previousDeal) {
+        Instant now = Instant.now();
+        return dealRepository.save(Deal.builder()
+                .snapshot(snapshot)
+                .trackedSite(snapshot.getTrackedSite())
+                .type(d.type())
+                .title(d.title())
+                .description(d.description())
+                .discountValue(d.discountValue())
+                .confidence(d.confidence())
+                .detectionLayer(d.detectionLayer())
+                .expiresAt(d.expiresAt())
+                .active(true)
+                .firstSeenAt(now)
+                .lastSeenAt(now)
+                .nObservations(1)
+                .previousDeal(previousDeal)
+                .build());
+    }
+
+    private void touchExistingDeal(Snapshot snapshot, Deal existing) {
+        existing.setLastSeenAt(Instant.now());
+        existing.setNObservations(existing.getNObservations() + 1);
+        existing.setSnapshot(snapshot);
+        dealRepository.save(existing);
     }
 
     @Transactional

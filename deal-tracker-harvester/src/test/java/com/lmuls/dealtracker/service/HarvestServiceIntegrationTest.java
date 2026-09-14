@@ -48,7 +48,7 @@ class HarvestServiceIntegrationTest {
         wireMock = new WireMockServer(WireMockConfiguration.wireMockConfig().dynamicPort());
         wireMock.start();
 
-        testUser = userRepository.save(User.builder().email("test@example.com").build());
+        testUser = userRepository.save(User.builder().email("test@example.com").passwordHash("test-hash").build());
 
         // Allow all paths by default
         wireMock.stubFor(get(urlEqualTo("/robots.txt"))

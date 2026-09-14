@@ -61,8 +61,25 @@ public class Deal {
     @Builder.Default
     private Boolean active = true;
 
+    @Column(name = "first_seen_at", nullable = false, updatable = false)
+    private Instant firstSeenAt;
+
+    @Column(name = "last_seen_at", nullable = false)
+    private Instant lastSeenAt;
+
+    @Column(name = "n_observations", nullable = false)
+    @Builder.Default
+    private Integer nObservations = 1;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "previous_deal_id")
+    private Deal previousDeal;
+
     @PrePersist
     protected void onCreate() {
-        if (detectedAt == null) detectedAt = Instant.now();
+        Instant now = Instant.now();
+        if (detectedAt == null) detectedAt = now;
+        if (firstSeenAt == null) firstSeenAt = now;
+        if (lastSeenAt == null) lastSeenAt = now;
     }
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
-function formatInterval(iso: string): string {
+function formatInterval(iso: string | undefined): string {
+  if (!iso) return '—';
   const map: Record<string, string> = {
     'PT30M': '30 minutes',
     'PT1H':  '1 hour',
