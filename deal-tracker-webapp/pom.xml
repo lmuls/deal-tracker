@@ -190,7 +190,7 @@
                         <configuration>
                             <sources>
                                 <!-- Adjust this path to match your specific generator output -->
-                                <source>${project.build.directory}/generated-sources/openapi/src/main/java</source>
+                                <source>${project.build.directory}/generated-sources/openapi</source>
                             </sources>
                         </configuration>
                     </execution>
@@ -202,7 +202,7 @@
                         </goals>
                         <configuration>
                             <sources>
-                                <source>${project.build.directory}/generated-sources/openapi/src/main/java</source>
+                                <source>${project.build.directory}/generated-sources/openapi</source>
                             </sources>
                         </configuration>
                     </execution>
