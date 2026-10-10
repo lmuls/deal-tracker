@@ -25,10 +25,4 @@ public record DealDetection(
         return new DealDetection(type, title, description, discountValue,
                 confidence, detectionLayer, expiresAt);
     }
-
-    /** Returns a copy of this detection with {@code confidence} set. */
-    public DealDetection withConfidence(Confidence confidence) {
-        return new DealDetection(type, title, description, discountValue,
-                confidence, detectionLayer, expiresAt);
-    }
 }

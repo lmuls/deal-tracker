@@ -1,10 +1,9 @@
 package com.lmuls.dealtracker.service;
 
 import com.lmuls.dealtracker.config.ParserProperties;
-import com.lmuls.dealtracker.detector.DealDetector;
+import com.lmuls.dealtracker.detector.CampaignDetector;
 import com.lmuls.dealtracker.entity.Deal;
 import com.lmuls.dealtracker.entity.Snapshot;
-import com.lmuls.dealtracker.enums.Confidence;
 import com.lmuls.dealtracker.enums.SnapshotStatus;
 import com.lmuls.dealtracker.model.DealDetection;
 import com.lmuls.dealtracker.repository.DealRepository;
@@ -21,14 +20,16 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
- * Orchestrates the 3-layer detection pipeline for a single snapshot.
+ * Runs campaign detection for a single snapshot and keeps the site's active
+ * deals in sync: a new campaign inserts a row, an ongoing one is touched, a
+ * changed one is superseded, and one that is no longer on the page is ended.
  * <p>
  * Design notes:
  * <ul>
@@ -44,14 +45,14 @@ import java.util.Objects;
 public class ParseService {
 
     private final ParserProperties properties;
-    private final List<DealDetector> detectors;
+    private final CampaignDetector campaignDetector;
     private final ExpiryExtractor expiryExtractor;
     private final DealRepository dealRepository;
     private final SnapshotRepository snapshotRepository;
 
     /**
-     * Parses the given snapshot: reads HTML from disk, runs all detection
-     * layers, merges results, and persists deals + updated snapshot status.
+     * Parses the given snapshot: reads HTML from disk, detects the current
+     * campaign (if any), and persists deals + updated snapshot status.
      */
     public void parse(Snapshot snapshot) {
         Document doc;
@@ -67,22 +68,14 @@ public class ParseService {
             Locale locale = detectLocale(doc);
             log.debug("Parsing snapshot {} with locale {}", snapshot.getId(), locale);
 
-            List<DealDetection> detections = new ArrayList<>();
-            for (DealDetector detector : detectors) {
-                detections.addAll(detector.detect(doc, locale));
-            }
-
-            // Fill in expiry dates for detections that don't already have one
-            detections = detections.stream()
+            Optional<DealDetection> detection = campaignDetector.detect(doc, locale)
                     .map(d -> d.expiresAt() != null ? d
                             : expiryExtractor.extract(doc, snapshot.getFetchedAt())
-                                    .map(d::withExpiresAt).orElse(d))
-                    .toList();
+                                    .map(d::withExpiresAt).orElse(d));
+            log.info("Snapshot {} — {}", snapshot.getId(),
+                    detection.map(d -> "campaign detected: " + d.title()).orElse("no campaign"));
 
-            detections = deduplicate(detections);
-            log.info("Snapshot {} — {} deal(s) detected", snapshot.getId(), detections.size());
-
-            persistResults(snapshot, detections);
+            persistResults(snapshot, detection);
         } catch (Exception e) {
             log.error("Parse failed for snapshot {}", snapshot.getId(), e);
             markFailed(snapshot);
@@ -105,70 +98,46 @@ public class ParseService {
         return Locale.forLanguageTag(primary);
     }
 
-    /**
-     * Deduplicates detections by normalised title.
-     * When two detections share the same title, the one with higher confidence
-     * (HIGH > MEDIUM > LOW) is kept.
-     */
-    private static List<DealDetection> deduplicate(List<DealDetection> detections) {
-        var best = new java.util.LinkedHashMap<String, DealDetection>();
-        for (DealDetection d : detections) {
-            String key = normaliseTitle(d.title());
-            DealDetection existing = best.get(key);
-            if (existing == null || confidenceOrdinal(d.confidence()) < confidenceOrdinal(existing.confidence())) {
-                best.put(key, d);
-            }
-        }
-        return List.copyOf(best.values());
-    }
-
     private static String normaliseTitle(String title) {
         if (title == null) return "";
         return title.toLowerCase(Locale.ROOT).replaceAll("\\s+", " ").trim();
     }
 
-    /** Lower ordinal = higher priority (HIGH=0, MEDIUM=1, LOW=2). */
-    private static int confidenceOrdinal(Confidence c) {
-        return switch (c) {
-            case HIGH -> 0;
-            case MEDIUM -> 1;
-            case LOW -> 2;
-        };
-    }
-
     @Transactional
-    protected void persistResults(Snapshot snapshot, List<DealDetection> detections) {
-        List<Deal> activeSiteDeals = new ArrayList<>(
-                dealRepository.findByTrackedSiteIdAndActiveTrue(snapshot.getTrackedSite().getId()));
+    protected void persistResults(Snapshot snapshot, Optional<DealDetection> detection) {
+        List<Deal> activeSiteDeals =
+                dealRepository.findByTrackedSiteIdAndActiveTrue(snapshot.getTrackedSite().getId());
 
-        for (DealDetection d : detections) {
-            upsertDeal(snapshot, d, activeSiteDeals);
+        Deal current = detection.map(d -> upsertDeal(snapshot, d, activeSiteDeals)).orElse(null);
+
+        // Anything else still active is no longer on the page: the campaign has ended.
+        for (Deal deal : activeSiteDeals) {
+            if (deal != current && Boolean.TRUE.equals(deal.getActive())) {
+                deal.setActive(false);
+                dealRepository.save(deal);
+            }
         }
         snapshot.setStatus(SnapshotStatus.PARSED);
         snapshotRepository.save(snapshot);
     }
 
     /**
-     * Matches a detection against the site's current active deals by normalised title.
+     * Matches the detection against the site's active deals by normalised title.
      * No match creates a new deal; an unchanged match bumps its observation count; a
      * changed match supersedes the old deal with a new versioned row referencing it.
+     * Returns the deal that represents the detection after this snapshot.
      */
-    private void upsertDeal(Snapshot snapshot, DealDetection d, List<Deal> activeSiteDeals) {
+    private Deal upsertDeal(Snapshot snapshot, DealDetection d, List<Deal> activeSiteDeals) {
         Deal match = findActiveMatch(activeSiteDeals, d.title());
 
-        if (match == null) {
-            activeSiteDeals.add(insertNewDeal(snapshot, d, null));
-            return;
-        }
+        if (match == null) return insertNewDeal(snapshot, d, null);
         if (contentEquals(d, match)) {
             touchExistingDeal(snapshot, match);
-            return;
+            return match;
         }
         match.setActive(false);
         dealRepository.save(match);
-        Deal created = insertNewDeal(snapshot, d, match);
-        activeSiteDeals.remove(match);
-        activeSiteDeals.add(created);
+        return insertNewDeal(snapshot, d, match);
     }
 
     private static Deal findActiveMatch(List<Deal> candidates, String title) {
@@ -180,10 +149,9 @@ public class ParseService {
     }
 
     private static boolean contentEquals(DealDetection d, Deal existing) {
+        // Description is display-only; rewording the banner is not a new campaign.
         return Objects.equals(d.type(), existing.getType())
-                && Objects.equals(d.discountValue(), existing.getDiscountValue())
-                && Objects.equals(d.description(), existing.getDescription())
-                && Objects.equals(d.expiresAt(), existing.getExpiresAt());
+                && Objects.equals(d.discountValue(), existing.getDiscountValue());
     }
 
     private Deal insertNewDeal(Snapshot snapshot, DealDetection d, Deal previousDeal) {

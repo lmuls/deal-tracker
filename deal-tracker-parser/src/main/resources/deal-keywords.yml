@@ -1,135 +1,71 @@
+# Campaign signals, matched only inside prominent page regions (title, header,
+# hero/banner/announcement bars, h1/h2) by CampaignDetector.
+# Keywords are matched case-insensitively on whole-word boundaries.
+# Pattern order matters: the first pattern yielding the highest percentage
+# provides the campaign title, so put the most descriptive patterns first.
 locales:
   en:
-    percentage_discount:
-      patterns:
-        - '\d{1,2}%\s*(off|discount|savings)'
-        - 'save\s+\d{1,2}%'
-        - 'up\s+to\s+\d{1,2}%\s+off'
-      keywords:
-        - "percent off"
-        - "half price"
-        - "half off"
-    fixed_amount_discount:
-      patterns:
-        - '(save|get)\s+[\$£€]\s*\d+'
-        - '[\$£€]\s*\d+\s+off'
-      keywords:
-        - "dollars off"
-        - "money off"
     sale_event:
       keywords:
+        - "black friday"
+        - "black week"
+        - "cyber monday"
+        - "cyber week"
+        - "singles day"
+        - "boxing day"
+        - "prime day"
         - "spring sale"
         - "summer sale"
         - "winter sale"
         - "autumn sale"
+        - "holiday sale"
+        - "christmas sale"
+        - "january sale"
+        - "mid-season sale"
+        - "end of season sale"
         - "flash sale"
         - "clearance sale"
-        - "black friday"
-        - "cyber monday"
-        - "end of season"
         - "site-wide sale"
         - "sitewide sale"
         - "store-wide sale"
-        - "grand opening sale"
+        - "storewide sale"
         - "anniversary sale"
-        - "holiday sale"
         - "warehouse sale"
         - "everything must go"
-    promotional:
-      keywords:
-        - "free shipping"
-        - "free delivery"
-        - "buy one get one"
-        - "BOGO"
-        - "gift with purchase"
-        - "limited time offer"
-        - "special offer"
-        - "exclusive offer"
-        - "members only"
-        - "today only"
-        - "this weekend only"
-    coupon:
-      patterns:
-        - '(use|enter|apply|code|coupon|promo)\s*:?\s*[A-Z0-9]{3,}'
-      keywords:
-        - "promo code"
-        - "coupon code"
-        - "discount code"
-        - "voucher code"
-        - "use code"
-    urgency:
-      keywords:
-        - "ends today"
-        - "ends tonight"
-        - "ends soon"
-        - "last chance"
-        - "while supplies last"
-        - "limited stock"
-        - "don't miss out"
-        - "hurry"
-        - "final hours"
-        - "selling fast"
-
-  no:
     percentage_discount:
       patterns:
-        - '\d{1,2}%\s*(rabatt|avslag)'
-        - 'spar\s+\d{1,2}%'
-        - 'opptil\s+\d{1,2}%'
+        - 'up\s+to\s+\d{1,2}\s?%(\s*off)?'
+        - 'save\s+(up\s+to\s+)?\d{1,2}\s?%'
+        - '(?<!\d)\d{1,2}\s?%\s*(off|discount|savings)'
       keywords:
-        - "prosent rabatt"
-        - "halv pris"
-    fixed_amount_discount:
-      patterns:
-        - 'spar\s+\d+\s*(kr|NOK)'
-        - '\d+\s*(kr|NOK)\s+(rabatt|avslag)'
-      keywords:
-        - "kroner rabatt"
-        - "kroner avslag"
+        - "half price"
+        - "half off"
+
+  no:
     sale_event:
       keywords:
+        - "black friday"
+        - "black week"
+        - "cyber monday"
+        - "singles day"
         - "vårsalg"
         - "sommersalg"
         - "vintersalg"
         - "høstsalg"
-        - "black friday"
-        - "cyber monday"
+        - "julesalg"
+        - "romjulssalg"
+        - "januarsalg"
+        - "mellomsalg"
         - "sesongslutt"
         - "lageruttømming"
         - "lagersalg"
-        - "alt må ut"
         - "storsalg"
         - "supersalg"
-        - "kampanje"
-        - "vårslipp"
-        - "romjulssalg"
-    promotional:
-      keywords:
-        - "gratis frakt"
-        - "gratis levering"
-        - "fri frakt"
-        - "kjøp 2 betal for 1"
-        - "gavekort inkludert"
-        - "begrenset tilbud"
-        - "spesialtilbud"
-        - "eksklusivt tilbud"
-        - "kun i dag"
-        - "kun denne helgen"
-        - "medlemstilbud"
-    coupon:
+        - "alt må ut"
+    percentage_discount:
       patterns:
-        - '(bruk|skriv|kode|kupong|rabattkode)\s*:?\s*[A-Z0-9]{3,}'
+        - 'opptil\s+\d{1,2}\s?%(\s*(rabatt|avslag))?'
+        - 'spar\s+(opptil\s+)?\d{1,2}\s?%'
+        - '(?<!\d)\d{1,2}\s?%\s*(rabatt|avslag)'
       keywords:
-        - "rabattkode"
-        - "kupongkode"
-        - "kampanjekode"
-        - "bruk kode"
-    urgency:
-      keywords:
-        - "slutter i dag"
-        - "siste sjanse"
-        - "begrenset antall"
-        - "snart slutt"
-        - "går fort"
-        - "skynd deg"
-        - "siste dag"
+        - "halv pris"

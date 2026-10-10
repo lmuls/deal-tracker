@@ -65,36 +65,26 @@ class ParseServiceIntegrationTest {
     }
 
     @Test
-    void persistsDealsForSnapshotWithStructuredData() throws IOException {
-        Snapshot snapshot = createSnapshotFromHtml("html/structured-data.html");
+    void persistsSingleDealForCampaignSnapshot() throws IOException {
+        Snapshot snapshot = createSnapshotFromHtml("html/campaign-black-friday.html");
 
         parseService.parse(snapshot);
 
         var deals = dealRepository.findByTrackedSiteIdOrderByDetectedAtDesc(snapshot.getTrackedSite().getId());
-        assertThat(deals).isNotEmpty();
+        assertThat(deals).singleElement().satisfies(d -> assertThat(d.getTitle()).isEqualTo("Black Friday"));
 
         var updated = snapshotRepository.findById(snapshot.getId()).orElseThrow();
         assertThat(updated.getStatus()).isEqualTo(SnapshotStatus.PARSED);
     }
 
     @Test
-    void persistsDealsForSnapshotWithDomPatterns() throws IOException {
-        Snapshot snapshot = createSnapshotFromHtml("html/dom-pattern.html");
+    void persistsNoDealsForNoisyPageWithoutCampaign() throws IOException {
+        Snapshot snapshot = createSnapshotFromHtml("html/noise-only.html");
 
         parseService.parse(snapshot);
 
-        var deals = dealRepository.findByTrackedSiteIdOrderByDetectedAtDesc(snapshot.getTrackedSite().getId());
-        assertThat(deals).isNotEmpty();
-    }
-
-    @Test
-    void persistsDealsForSnapshotWithTextPatterns() throws IOException {
-        Snapshot snapshot = createSnapshotFromHtml("html/text-pattern.html");
-
-        parseService.parse(snapshot);
-
-        var deals = dealRepository.findByTrackedSiteIdOrderByDetectedAtDesc(snapshot.getTrackedSite().getId());
-        assertThat(deals).isNotEmpty();
+        assertThat(dealRepository.findByTrackedSiteIdOrderByDetectedAtDesc(
+                snapshot.getTrackedSite().getId())).isEmpty();
     }
 
     @Test
@@ -150,7 +140,7 @@ class ParseServiceIntegrationTest {
 
         parseService.parse(snapshot);
 
-        Deal deal = soleLoyaltyDeal(site);
+        Deal deal = soleActiveDeal(site);
         assertThat(deal.getFirstSeenAt()).isEqualTo(deal.getLastSeenAt());
         assertThat(deal.getNObservations()).isEqualTo(1);
         assertThat(deal.getPreviousDeal()).isNull();
@@ -158,17 +148,17 @@ class ParseServiceIntegrationTest {
     }
 
     @Test
-    void unchangedReobservationBumpsObservationCountInsteadOfInserting() throws IOException {
+    void rewordedReobservationBumpsObservationCountInsteadOfInserting() throws IOException {
         TrackedSite site = createTrackedSite();
         Snapshot first = createSnapshotFromHtml("html/versioning-v1.html", site);
         parseService.parse(first);
-        Deal original = soleLoyaltyDeal(site);
+        Deal original = soleActiveDeal(site);
         Instant originalFirstSeenAt = original.getFirstSeenAt();
 
-        Snapshot second = createSnapshotFromHtml("html/versioning-v1.html", site);
+        Snapshot second = createSnapshotFromHtml("html/versioning-v1-reworded.html", site);
         parseService.parse(second);
 
-        Deal updated = soleLoyaltyDeal(site);
+        Deal updated = soleActiveDeal(site);
         assertThat(updated.getId()).isEqualTo(original.getId());
         assertThat(updated.getNObservations()).isEqualTo(2);
         assertThat(updated.getFirstSeenAt()).isEqualTo(originalFirstSeenAt);
@@ -182,7 +172,7 @@ class ParseServiceIntegrationTest {
         TrackedSite site = createTrackedSite();
         Snapshot first = createSnapshotFromHtml("html/versioning-v1.html", site);
         parseService.parse(first);
-        Deal original = soleLoyaltyDeal(site);
+        Deal original = soleActiveDeal(site);
 
         Snapshot second = createSnapshotFromHtml("html/versioning-v2.html", site);
         parseService.parse(second);
@@ -200,12 +190,39 @@ class ParseServiceIntegrationTest {
         assertThat(newVersion.getPreviousDeal().getId()).isEqualTo(original.getId());
         assertThat(newVersion.getNObservations()).isEqualTo(1);
         assertThat(newVersion.getFirstSeenAt()).isEqualTo(newVersion.getLastSeenAt());
-        assertThat(newVersion.getDiscountValue()).isEqualTo("15");
+        assertThat(newVersion.getDiscountValue()).isEqualTo("50%");
+    }
+
+    @Test
+    void campaignThatDisappearsIsDeactivated() throws IOException {
+        TrackedSite site = createTrackedSite();
+        parseService.parse(createSnapshotFromHtml("html/versioning-v1.html", site));
+        Deal original = soleActiveDeal(site);
+
+        parseService.parse(createSnapshotFromHtml("html/no-deals.html", site));
+
+        assertThat(dealRepository.findByTrackedSiteIdAndActiveTrue(site.getId())).isEmpty();
+        assertThat(dealRepository.findById(original.getId()).orElseThrow().getActive()).isFalse();
+    }
+
+    @Test
+    void campaignThatReturnsCreatesNewDeal() throws IOException {
+        TrackedSite site = createTrackedSite();
+        parseService.parse(createSnapshotFromHtml("html/versioning-v1.html", site));
+        Deal original = soleActiveDeal(site);
+        parseService.parse(createSnapshotFromHtml("html/no-deals.html", site));
+
+        parseService.parse(createSnapshotFromHtml("html/versioning-v1.html", site));
+
+        Deal returned = soleActiveDeal(site);
+        assertThat(returned.getId()).isNotEqualTo(original.getId());
+        assertThat(returned.getPreviousDeal()).isNull();
+        assertThat(dealRepository.findByTrackedSiteIdOrderByDetectedAtDesc(site.getId())).hasSize(2);
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
-    private Deal soleLoyaltyDeal(TrackedSite site) {
+    private Deal soleActiveDeal(TrackedSite site) {
         var deals = dealRepository.findByTrackedSiteIdAndActiveTrue(site.getId());
         assertThat(deals).hasSize(1);
         return deals.get(0);
