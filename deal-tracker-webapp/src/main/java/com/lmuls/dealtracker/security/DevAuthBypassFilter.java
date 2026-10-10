@@ -31,7 +31,7 @@ import java.util.List;
 @ConditionalOnProperty(name = "app.dev.bypass-auth", havingValue = "true")
 public class DevAuthBypassFilter extends OncePerRequestFilter {
 
-    private static final String DEV_USER = "dev@dealtracker.local";
+    static final String DEV_USER = "dev@dealtracker.local";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
