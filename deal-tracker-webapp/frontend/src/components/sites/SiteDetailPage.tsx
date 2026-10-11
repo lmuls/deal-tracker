@@ -48,6 +48,7 @@ export default function SiteDetailPage() {
   const [loading, setLoading] = useState(true);
   const [dealsLoading, setDealsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const loadSite = useCallback(async () => {
     if (!id) return;
@@ -76,7 +77,9 @@ export default function SiteDetailPage() {
 
   const handleDelete = async () => {
     if (!site?.id || !confirm(`Remove "${site.name}"?`)) return;
-    await deleteSite({ path: { id: site.id } });
+    setDeleteError(null);
+    const { error: err } = await deleteSite({ path: { id: site.id } });
+    if (err) { setDeleteError('Failed to remove site. Please try again.'); return; }
     navigate('/sites');
   };
 
@@ -98,6 +101,12 @@ export default function SiteDetailPage() {
 
   return (
     <>
+      {deleteError && (
+        <Alert severity="error" onClose={() => setDeleteError(null)} sx={{ borderRadius: 2, mb: 2 }}>
+          {deleteError}
+        </Alert>
+      )}
+
       {/* Header */}
       <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, mb: 3 }}>
         <Box sx={{ flex: 1, minWidth: 0 }}>

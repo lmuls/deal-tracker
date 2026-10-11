@@ -29,7 +29,8 @@ export default function SiteCard({ site, onChanged }: Props) {
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!confirm(`Remove "${site.name}"?`)) return;
-    await deleteSite({ path: { id: site.id! } });
+    const { error } = await deleteSite({ path: { id: site.id! } });
+    if (error) { alert(`Failed to remove "${site.name}". Please try again.`); return; }
     onChanged();
   };
 
