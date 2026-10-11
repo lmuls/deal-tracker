@@ -1,0 +1,4 @@
+.settings-panel { max-width: 560px; }
+.settings-group { padding-top: var(--space-sm); border-top: 1px solid var(--line); }
+/* Reserves the line so "Saved" appearing doesn't shift the panel. */
+.settings-status { min-height: 1lh; color: var(--ink-muted); }

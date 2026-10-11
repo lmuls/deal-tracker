@@ -1,0 +1,9 @@
+/* Skeleton: app-level addition to the design system. Heights approximate the component each shape stands in for. */
+.app-skeleton { border-radius: var(--radius-lg); background: var(--line); animation: app-skeleton-pulse 1.4s ease-in-out infinite; }
+.app-skeleton--heading { height: 80px; width: 50%; }
+.app-skeleton--tile { height: 140px; }
+.app-skeleton--list { height: 160px; }
+.app-skeleton--card { height: 220px; }
+.app-skeleton--panel { height: 280px; }
+@keyframes app-skeleton-pulse { 50% { opacity: .5; } }
+@media (prefers-reduced-motion: reduce) { .app-skeleton { animation: none; } }

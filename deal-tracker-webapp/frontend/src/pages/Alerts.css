@@ -1,0 +1,5 @@
+.alerts-list { display: flex; flex-direction: column; gap: var(--space-lg); max-width: 760px; }
+.alerts-group { display: flex; flex-direction: column; gap: var(--space-xs); }
+.alerts-group__title { margin-bottom: var(--space-xs); color: var(--ink-muted); }
+.alerts-rows { display: flex; flex-direction: column; gap: var(--space-xs); }
+.alerts-more { display: flex; justify-content: center; }

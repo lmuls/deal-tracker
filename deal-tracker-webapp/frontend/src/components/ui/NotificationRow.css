@@ -1,0 +1,18 @@
+/* NotificationRow: ported from design/design-system/components/bundle.css. Keep class names in sync. */
+.dt-notif {
+  display: flex; align-items: center; gap: var(--space-sm); width: 100%; box-sizing: border-box;
+  padding: var(--space-sm) var(--space-md); border: 0; border-radius: var(--radius-sm);
+  background: transparent; color: var(--ink); text-align: left; text-decoration: none;
+  font-family: var(--font-sans); cursor: pointer; transition: background-color .15s ease;
+}
+a.dt-notif:hover, button.dt-notif:hover { background: var(--blue-100); }
+.dt-notif:focus-visible { outline: 2px solid var(--blue-600); outline-offset: 2px; }
+.dt-notif--unread { background: var(--surface-raised); box-shadow: var(--shadow-soft); }
+.dt-notif__dot { flex: none; width: 8px; height: 8px; border-radius: var(--radius-pill); background: transparent; }
+.dt-notif--unread .dt-notif__dot { background: var(--orange-500); }
+.dt-notif__body { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.dt-notif__store { font-size: 14px; line-height: 22px; color: var(--ink-muted); }
+.dt-notif__msg { font-size: 16px; line-height: 24px; color: var(--ink); }
+.dt-notif--unread .dt-notif__msg { font-weight: 600; }
+.dt-notif__meta { flex: none; display: flex; align-items: center; gap: var(--space-sm); }
+.dt-notif__time { font-size: 14px; line-height: 22px; color: var(--ink-muted); white-space: nowrap; }

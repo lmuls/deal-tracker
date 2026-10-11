@@ -1,0 +1,17 @@
+/* Switch: ported from design/design-system/components/bundle.css. Keep class names in sync. */
+.dt-switch { display: flex; align-items: flex-start; gap: 12px; }
+.dt-switch__track {
+  flex: none; position: relative; width: 44px; height: 26px; padding: 0; border: 0; cursor: pointer;
+  border-radius: var(--radius-pill); background: var(--line-control); transition: background-color .2s ease;
+}
+.dt-switch__track.is-on { background: var(--blue-600); }
+.dt-switch__track:focus-visible { outline: 2px solid var(--blue-600); outline-offset: 3px; }
+.dt-switch__thumb {
+  position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: var(--radius-pill);
+  background: var(--surface-raised); box-shadow: var(--shadow-soft); transition: transform .2s ease;
+}
+.dt-switch__track.is-on .dt-switch__thumb { transform: translateX(18px); }
+.dt-switch--disabled { opacity: .45; }
+.dt-switch__text { display: flex; flex-direction: column; }
+.dt-switch__label { font-size: 15px; line-height: 22px; font-weight: 600; color: var(--ink); cursor: pointer; }
+.dt-switch__desc { font-size: 14px; line-height: 20px; color: var(--ink-muted); }

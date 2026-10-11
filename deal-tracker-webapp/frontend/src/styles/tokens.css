@@ -1,0 +1,51 @@
+/* Deal Tracker tokens, copied from design/design-system/tokens.css. Keep the two in sync. */
+/* Plus Jakarta Sans is loaded in index.html. */
+
+:root {
+  /* color */
+  --surface: #f7f9fc;
+  --surface-raised: #ffffff;
+  --ink: #0f1b2d;
+  --ink-muted: #55657d;
+  --line: #e3e9f2;
+  --line-control: #7f8ca1;
+  --blue-600: #1a5fd6;
+  --blue-100: #e8f0ff;
+  --orange-500: #ff7a1a;
+  --orange-700: #b84a0a;
+  --orange-100: #fff1e6;
+  /* gradient */
+  --gradient-primary: linear-gradient(135deg, #1554c9 0%, #2f6fe4 100%);
+  --gradient-deal: linear-gradient(135deg, #ff6a1a 0%, #ffa53d 100%);
+  --gradient-horizon: linear-gradient(120deg, #1a5fd6 0%, #5aa8ff 42%, #ffb27a 70%, #ff7a1a 100%);
+  --gradient-wash: linear-gradient(180deg, #e8f0ff 0%, #f7f9fc 55%, #fff1e6 100%);
+  /* shadow */
+  --shadow-soft: 0 1px 2px rgba(15, 27, 45, 0.04), 0 8px 24px rgba(15, 27, 45, 0.06);
+  --shadow-lift: 0 2px 4px rgba(15, 27, 45, 0.05), 0 16px 40px rgba(26, 95, 214, 0.14);
+  /* spacing */
+  --space-2xs: 4px;
+  --space-xs: 8px;
+  --space-xs-sm: 12px;
+  --space-sm: 16px;
+  --space-md: 24px;
+  --space-lg: 40px;
+  --space-xl: 72px;
+  /* radius */
+  --radius-sm: 10px;
+  --radius-lg: 20px;
+  --radius-xl: 32px;
+  --radius-pill: 999px;
+  /* layout */
+  --content-width: 1120px;
+  --overlay: rgba(15, 27, 45, 0.45);
+  /* type */
+  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.display { font-family: var(--font-sans); font-size: 48px; line-height: 56px; font-weight: 700; letter-spacing: -0.02em; }
+.heading-1 { font-family: var(--font-sans); font-size: 32px; line-height: 40px; font-weight: 700; letter-spacing: -0.01em; }
+.heading-2 { font-family: var(--font-sans); font-size: 22px; line-height: 30px; font-weight: 600; }
+.heading-3 { font-family: var(--font-sans); font-size: 17px; line-height: 24px; font-weight: 600; }
+.body { font-family: var(--font-sans); font-size: 16px; line-height: 26px; font-weight: 400; }
+.small { font-family: var(--font-sans); font-size: 14px; line-height: 22px; font-weight: 400; }
+.label { font-family: var(--font-sans); font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }

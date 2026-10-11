@@ -1,0 +1,21 @@
+/* Button: ported from design/design-system/components/bundle.css. Keep class names in sync. */
+.dt-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-xs);
+  border: 0; border-radius: var(--radius-sm); cursor: pointer;
+  font-family: var(--font-sans); font-weight: 600; white-space: nowrap;
+  transition: box-shadow .15s ease, transform .15s ease, background-color .15s ease;
+}
+.dt-btn--md { height: 44px; padding: 0 20px; font-size: 15px; }
+.dt-btn--sm { height: 34px; padding: 0 14px; font-size: 14px; }
+.dt-btn:focus-visible { outline: 2px solid var(--blue-600); outline-offset: 3px; }
+.dt-btn:disabled { cursor: not-allowed; opacity: .45; box-shadow: none; transform: none; }
+.dt-btn__icon { display: inline-flex; }
+
+.dt-btn--primary { background: var(--gradient-primary); color: var(--surface-raised); box-shadow: var(--shadow-soft); }
+.dt-btn--primary:hover:not(:disabled) { box-shadow: var(--shadow-lift); transform: translateY(-1px); }
+
+.dt-btn--secondary { background: var(--blue-100); color: var(--blue-600); }
+.dt-btn--secondary:hover:not(:disabled) { box-shadow: inset 0 0 0 1px var(--blue-600); }
+
+.dt-btn--quiet { background: transparent; color: var(--blue-600); }
+.dt-btn--quiet:hover:not(:disabled) { background: var(--blue-100); }

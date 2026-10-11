@@ -1,0 +1,11 @@
+/* ChoiceChips: ported from design/design-system/components/bundle.css. Keep class names in sync. */
+.dt-chips { display: flex; flex-wrap: wrap; gap: var(--space-xs); }
+.dt-chip {
+  height: 36px; padding: 0 16px; border: 0; border-radius: var(--radius-pill); cursor: pointer;
+  background: var(--surface-raised); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line-control);
+  font-family: var(--font-sans); font-size: 14px; font-weight: 600;
+  transition: background-color .15s ease, box-shadow .15s ease;
+}
+.dt-chip:hover { background: var(--blue-100); }
+.dt-chip.is-selected { background: var(--blue-100); color: var(--blue-600); box-shadow: inset 0 0 0 2px var(--blue-600); }
+.dt-chip:focus-visible { outline: 2px solid var(--blue-600); outline-offset: 2px; }

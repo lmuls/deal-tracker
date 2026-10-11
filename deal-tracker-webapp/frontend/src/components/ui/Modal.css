@@ -1,0 +1,10 @@
+/* Modal: app-level addition to the design system. */
+.app-modal {
+  width: min(560px, calc(100vw - 2 * var(--space-sm)));
+  max-height: calc(100vh - 2 * var(--space-lg));
+  padding: 0; border: 0; overflow: auto;
+  border-radius: var(--radius-lg); background: transparent; color: var(--ink);
+  box-shadow: var(--shadow-lift);
+}
+.app-modal::backdrop { background: var(--overlay); }
+.app-modal__card { padding: var(--space-lg); background: var(--surface-raised); }

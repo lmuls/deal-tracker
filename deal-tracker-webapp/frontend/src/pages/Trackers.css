@@ -1,0 +1,1 @@
+.trackers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: var(--space-md); align-items: start; }

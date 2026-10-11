@@ -1,0 +1,6 @@
+/* StatTile: ported from design/design-system/components/bundle.css. Keep class names in sync. */
+.dt-stat { display: flex; flex-direction: column; gap: 4px; padding: var(--space-md); border-radius: var(--radius-lg); background: var(--surface-raised); box-shadow: var(--shadow-soft); }
+.dt-stat__value { font-size: 40px; line-height: 46px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); font-variant-numeric: tabular-nums; }
+.dt-stat--deal .dt-stat__value { color: var(--orange-700); }
+.dt-stat__label { font-size: 15px; line-height: 22px; font-weight: 600; color: var(--ink); }
+.dt-stat__detail { font-size: 14px; line-height: 20px; color: var(--ink-muted); }

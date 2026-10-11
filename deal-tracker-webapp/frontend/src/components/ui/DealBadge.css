@@ -1,0 +1,12 @@
+/* DealBadge: ported from design/design-system/components/bundle.css. Keep class names in sync. */
+.dt-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 24px; padding: 0 10px; border-radius: var(--radius-pill);
+  font-family: var(--font-sans); font-size: 12px; line-height: 16px; font-weight: 600;
+  letter-spacing: .06em; text-transform: uppercase; white-space: nowrap;
+}
+.dt-badge__dot { width: 6px; height: 6px; border-radius: var(--radius-pill); background: currentColor; }
+.dt-badge--deal { background: var(--gradient-deal); color: var(--ink); }
+.dt-badge--soft { background: var(--orange-100); color: var(--orange-700); }
+.dt-badge--watching { background: var(--blue-100); color: var(--blue-600); }
+.dt-badge--paused { background: var(--surface); color: var(--ink-muted); box-shadow: inset 0 0 0 1px var(--line); }

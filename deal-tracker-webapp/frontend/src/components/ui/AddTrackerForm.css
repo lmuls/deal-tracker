@@ -1,0 +1,10 @@
+/* AddTrackerForm: ported from design/design-system/components/bundle.css. Keep class names in sync.
+   .dt-form__group and .dt-form__switches are left out: ChoiceField replaces the group and the switches live in Settings. */
+.dt-form {
+  display: flex; flex-direction: column; gap: var(--space-md);
+  padding: var(--space-lg); border-radius: var(--radius-lg);
+  background: var(--surface-raised); box-shadow: var(--shadow-soft);
+}
+.dt-form__title { margin: 0; font-size: 22px; line-height: 30px; font-weight: 600; color: var(--ink); }
+.dt-form__sub { margin: 4px 0 0; font-size: 15px; line-height: 24px; color: var(--ink-muted); }
+.dt-form__actions { display: flex; justify-content: flex-end; gap: var(--space-xs); }

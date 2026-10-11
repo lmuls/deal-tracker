@@ -1,0 +1,14 @@
+/* AuthCard: ported from design/design-system/components/bundle.css. Keep class names in sync. */
+.dt-auth { padding: var(--space-lg); border-radius: var(--radius-lg); background: var(--surface-raised); box-shadow: var(--shadow-lift); }
+.dt-auth__tabs { display: grid; grid-template-columns: 1fr 1fr; padding: 4px; margin-bottom: var(--space-md); border-radius: var(--radius-pill); background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); }
+.dt-auth__tab {
+  height: 38px; border: 0; border-radius: var(--radius-pill); background: transparent; cursor: pointer;
+  font-family: var(--font-sans); font-size: 14px; font-weight: 600; color: var(--ink-muted);
+}
+.dt-auth__tab.is-active { background: var(--surface-raised); color: var(--ink); box-shadow: var(--shadow-soft); }
+.dt-auth__tab:focus-visible { outline: 2px solid var(--blue-600); outline-offset: 2px; }
+.dt-auth__form { display: flex; flex-direction: column; gap: var(--space-sm); }
+.dt-auth__link { align-self: flex-end; margin-top: -4px; font-size: 14px; font-weight: 600; color: var(--blue-600); text-decoration: none; }
+.dt-auth__link:hover { text-decoration: underline; }
+.dt-auth__submit { width: 100%; margin-top: var(--space-xs); }
+.dt-auth__fine { margin: 0; text-align: center; font-size: 13px; line-height: 18px; color: var(--ink-muted); }

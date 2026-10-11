@@ -1,0 +1,2 @@
+/* ChoiceField: app-level addition. Replaces the reference's `.dt-form__group` wrapper around label + ChoiceChips. */
+.app-choice-field { display: flex; flex-direction: column; gap: var(--space-xs); }

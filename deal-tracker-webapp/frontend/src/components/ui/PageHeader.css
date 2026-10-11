@@ -1,0 +1,7 @@
+/* PageHeader: app-level addition to the design system. Title is `.heading-1`, summary is `.body`. */
+.app-page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-md); flex-wrap: wrap; }
+.app-page-head__text { min-width: 0; }
+.app-page-head__eyebrow { margin-bottom: var(--space-xs); }
+.app-page-head__title { color: var(--ink); overflow-wrap: anywhere; }
+.app-page-head__summary { margin-top: var(--space-2xs); color: var(--ink-muted); overflow-wrap: anywhere; }
+.app-page-head__actions { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-xs); }

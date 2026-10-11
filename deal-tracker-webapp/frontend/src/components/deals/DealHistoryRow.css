@@ -1,0 +1,11 @@
+/* Title is `.body`, meta is `.small`. Live offers are raised; ended ones sit flat. No orange fill: the page's
+   one deal badge is the tracker's status, and each live row carries a soft badge. */
+.deal-row {
+  display: flex; align-items: center; gap: var(--space-sm);
+  padding: var(--space-sm); border-radius: var(--radius-sm);
+}
+.deal-row--live { background: var(--surface-raised); box-shadow: var(--shadow-soft); }
+.deal-row__body { flex: 1; min-width: 0; }
+.deal-row__title { color: var(--ink); overflow-wrap: anywhere; }
+.deal-row--live .deal-row__title { font-weight: 600; }
+.deal-row__meta { margin-top: var(--space-2xs); color: var(--ink-muted); }

@@ -1,0 +1,30 @@
+/* Base styles shared by every page. Values come from tokens.css. */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--ink);
+  background: var(--surface);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root { min-height: 100vh; }
+
+h1, h2, h3, h4, p { margin: 0; }
+
+a { color: var(--blue-600); }
+a:focus-visible { outline: 2px solid var(--blue-600); outline-offset: 3px; border-radius: 2px; }
+
+.dt-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.muted { color: var(--ink-muted); }
+
+/* Breakpoints (media queries can't read custom properties): 720px for phones, 1080px for tablets. */
+
+/* A row of StatTiles. */
+.app-stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: var(--space-md); }

@@ -1,0 +1,29 @@
+/* TrackerCard: ported from design/design-system/components/bundle.css. Keep class names in sync. */
+.dt-card {
+  display: flex; flex-direction: column; gap: var(--space-sm);
+  padding: var(--space-md); border-radius: var(--radius-lg);
+  background: var(--surface-raised); box-shadow: var(--shadow-soft);
+  transition: box-shadow .2s ease, transform .2s ease;
+}
+.dt-card:hover { box-shadow: var(--shadow-lift); transform: translateY(-2px); }
+.dt-card__head { display: flex; align-items: center; gap: var(--space-sm); }
+.dt-card__logo {
+  flex: none; width: 44px; height: 44px; border-radius: var(--radius-sm);
+  display: grid; place-items: center; overflow: hidden;
+  background: var(--blue-100); color: var(--blue-600); font-weight: 700; font-size: 18px;
+}
+.dt-card__logo img { width: 100%; height: 100%; object-fit: cover; }
+.dt-card--deal .dt-card__logo { background: var(--orange-100); color: var(--orange-700); }
+.dt-card__id { flex: 1; min-width: 0; }
+.dt-card__store { margin: 0; font-size: 17px; line-height: 24px; font-weight: 600; color: var(--ink); }
+.dt-card__url { margin: 0; font-size: 14px; line-height: 22px; color: var(--ink-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dt-card__deal { padding: var(--space-sm); border-radius: var(--radius-sm); background: var(--orange-100); }
+.dt-card__deal-title { margin: 0; font-size: 16px; line-height: 24px; font-weight: 600; color: var(--ink); }
+.dt-card__deal-detail { margin: 2px 0 0; font-size: 14px; line-height: 22px; color: var(--orange-700); font-weight: 600; }
+.dt-card__watch { margin: 0; font-size: 14px; line-height: 22px; color: var(--ink); }
+.dt-card__watch-label { color: var(--ink-muted); }
+.dt-card__status { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-xs) var(--space-sm); }
+.dt-card__checked { font-size: 14px; line-height: 22px; color: var(--ink-muted); }
+.dt-card__foot { display: flex; align-items: center; justify-content: flex-end; gap: var(--space-xs); padding-top: var(--space-sm); border-top: 1px solid var(--line); }
+.dt-card--paused .dt-card__logo { opacity: .5; }
+.dt-card--paused { box-shadow: none; outline: 1px solid var(--line); }
