@@ -82,6 +82,15 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <!-- Offline snapshot replay: ./mvnw -pl deal-tracker-parser exec:java -Dexec.args=<dir> -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.5.0</version>
+                <configuration>
+                    <mainClass>com.lmuls.dealtracker.replay.ReplayCli</mainClass>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
